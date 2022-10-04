@@ -142,6 +142,9 @@ def pieper(t6_0):
         q2s.extend(tmp)
 
     q2s=list(dict.fromkeys(q2s))
+    for t2 in q2s:
+        print('@t2:=', t2*180/pi)
+
     '''
     # solve q1: x=c1*g1(q2,q3)-s1*g2(q2,q3)
     for t3 in q3s:

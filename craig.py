@@ -21,7 +21,7 @@ def setDhTbl(dh):
 # ti_i-1
 def get_ti2i_1(i, theta=None):
     np.set_printoptions(precision=2, suppress=True)
-    init_printing(use_latex='mathjax')  # use pretty math output
+    init_printing(use_unicode=True)  # use pretty math output
     # fill in dh tbl wrt robot arms' dh params
 
     # array idx starts frm 0, so i-1
@@ -33,23 +33,9 @@ def get_ti2i_1(i, theta=None):
         t = theta
     #ci = Symbol('cos'+str(i))
     #si = Symbol('sin'+str(i))
-    '''
-      t = np.array([[cos(t), -sin(t), 0, ai],
-                  [
-                      sin(t) * round(cos(alp), 2),
-                      cos(t) * round(cos(alp), 2),
-                      round(-sin(alp),
-                      round(-sin(alp) * di
-                  ],
-                  [
-                      sin(t) * round(sin(alp), 2),
-                      cos(t) * round(sin(alp), 2),
-                      round(cos(alp)),
-                      round(cos(alp)) * di
-                  ], [0, 0, 0, 1]])
-    '''
 
-
+    """
+    this working
     t = np.array([[cos(t), -sin(t), 0, ai],
                   [
                       sin(t) * round(cos(alp), 2),
@@ -65,6 +51,18 @@ def get_ti2i_1(i, theta=None):
                   ], [0, 0, 0, 1]])
     print(f't{i}-{i-1}:', t.real)
     return (t.real)
+    """
+    t = sp.Matrix([[cos(t), -sin(t), 0, ai],
+                [sin(t)*cos(alp), cos(t)*cos(alp), -sin(alp), -sin(alp)*di],
+                [sin(t)*sin(alp), cos(t)*sin(alp), cos(alp), cos(alp)*di],
+                [0, 0, 0, 1]])
+    # print(f't{i}-{i-1}:', t)
+    if theta is None:
+        print(f't{i}-{i-1}:', t)
+    else:
+        print(f't{i}-{i-1}:', t)
+        #print (f't{i}-{i-1}:', np.round(t.astype(np.double),2))
+    return (t)
 
 '''
 ntu:
