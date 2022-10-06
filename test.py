@@ -1,4 +1,4 @@
-from cmath import atan, pi
+from cmath import atan, isclose, pi
 from math import atan2
 from sympy import Eq, Symbol, init_printing, solve, solveset, sin, cos, simplify, trigsimp
 
@@ -163,7 +163,16 @@ def pieper(t6_0):
         print('t1:=', t1*180/pi)
 
     #pc_0
-    cg.verify_ik((227,372), 300, 338, 206, q1s, q2s, q3s)
+    #cg.verify_ik(t6_0, 300, 338, 206, q1s, q2s, q3s)
+    t1 = atan2(y,x)
+    expr_x= sp.expand_trig(cos(t1)*g1-sin(t1)*g2)
+    for t2 in q2s:
+        for t3 in q3s:
+            myX = expr_x.subs([(q2,t2),(q3,t3)])
+            # myX=round(myX,2)
+            if isclose(myX,x):
+                print ('q2, q3:', t2*180/pi,t3*180/pi)
+
     print('all done!')
 
 def ntu_pieper():
@@ -191,4 +200,4 @@ def ntu_pieper():
     t6_0 = tcup_0_2s @ np.linalg.inv(Tcup_6)
     pieper(t6_0)
 
-#ntu_pieper()
+ntu_pieper()

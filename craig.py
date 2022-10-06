@@ -3,14 +3,7 @@ from math import atan2
 from sympy import trigsimp, Symbol, init_printing, sin, cos, symbols
 import numpy as np
 import sympy as sp
-'''
-dh_tbl=np.array([[0,0,0],
-                    [np.deg2rad(-90), -30, 0],
-                    [0, 340, 0],
-                    [np.deg2rad(-90), -40, 338],
-                    [np.deg2rad(90), 0, 0],
-                    [np.deg2rad(-90),0,0]])
-'''
+
 #dh for quiz4
 dh_tbl = []
 
@@ -33,10 +26,8 @@ def get_ti2i_1(i, theta=None):
         t = theta
     #ci = Symbol('cos'+str(i))
     #si = Symbol('sin'+str(i))
-
     """
-    this working
-    t = np.array([[cos(t), -sin(t), 0, ai],
+    t = sp.Matrix([[cos(t), -sin(t), 0, ai],
                   [
                       sin(t) * round(cos(alp), 2),
                       cos(t) * round(cos(alp), 2),
@@ -49,20 +40,24 @@ def get_ti2i_1(i, theta=None):
                       round(cos(alp),2),
                       round(cos(alp),2) * di
                   ], [0, 0, 0, 1]])
-    print(f't{i}-{i-1}:', t.real)
-    return (t.real)
+    # print(f't{i}-{i-1}:', t)
+    return (t)
     """
+
     t = sp.Matrix([[cos(t), -sin(t), 0, ai],
                 [sin(t)*cos(alp), cos(t)*cos(alp), -sin(alp), -sin(alp)*di],
                 [sin(t)*sin(alp), cos(t)*sin(alp), cos(alp), cos(alp)*di],
                 [0, 0, 0, 1]])
-    # print(f't{i}-{i-1}:', t)
     if theta is None:
+        #t=t.evalf(2)
+        #t = np.round(t.astype(np.double), 2)
         print(f't{i}-{i-1}:', t)
+        return(t)
     else:
         print(f't{i}-{i-1}:', t)
         #print (f't{i}-{i-1}:', np.round(t.astype(np.double),2))
-    return (t)
+        # return (np.format_float_scientific(t))
+
 
 '''
 ntu:

@@ -1,35 +1,25 @@
 # Import math Library
 import math
 
+from sympy import Identity, Matrix, MatrixSymbol, Symbol, init_printing, symbols
+
+init_printing(use_unicode=True)
+
+m= Matrix([1, 2, 3])
+#print(m)
+
+q1 = Symbol('q1')
+q2 = Symbol('q2')
+q3 = Symbol('q3')
+
+X = MatrixSymbol('X', 3, 3)
+Y = MatrixSymbol('Y', 3, 3)
+(X.T*X).I*Y
+print(X**(-1)*X.T**(-1)*Y)
+print(Matrix(X))
+
+
 # Return the sine value of 30 degrees
-print(round(math.cos(math.radians(-90))))
-
-# Return the sine value of 90 degrees
-print(math.sin(math.radians(-90)))
+#print(round(math.cos(math.radians(-90))))
 
 
-def get_ti2i_1(i, t=NULL):
-    alp, ai, di, ti = symbols('alp, ai, di, ti')
-    (alp, ai, di) = dh_tbl[i - 1, :]
-    #alp = dh_tbl[i - 1][0]
-    #ai='a'+str(i)
-    #di='d'+str(i)
-    if (t==NULL):
-        ti='t'+str(i)
-    tm = np.array([
-        [cos(ti), -sin(ti), 0, ai],
-        [
-        sin(ti) * round(cos(alp)),
-        cos(ti) * round(cos(alp)),
-        -sin(alp),
-        round(-sin(alp)) * di],
-        [
-        sin(ti) * sin(alp),
-        cos(ti) * sin(alp),
-        round(cos(alp)),
-        round(cos(alp)) * di
-        ],
-        [0, 0, 0, 1]
-        ])
-    print(f't{i}-{i-1}:', tm)
-    return (tm)
