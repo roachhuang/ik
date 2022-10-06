@@ -31,39 +31,22 @@ t6=np.deg2rad(25)
 def quiz4():
     t1_0 = cg.get_ti2i_1(1)
     t1_0 = t1_0.subs(q1, t1)
-    # t1_0 = t1_0.applyfunc(lambda x: round(x,2))
-    #print('t10 subs:', t1_0)
 
     t2_1 = cg.get_ti2i_1(2)
     t2_1 = t2_1.subs(q2, t2)
-    #t2_1 = t2_1.applyfunc(lambda x: round(x,2))
-    #print('t21 subs:', t2_1)
 
     t3_2 = cg.get_ti2i_1(3)
     t3_2 = t3_2.subs(q3, t3)
-    #t3_2 = t3_2.applyfunc(lambda x: round(x,2))
-    #print('t32 subs:', t3_2)
 
     t4_3 = cg.get_ti2i_1(4)
     t4_3 = t4_3.subs(q4, t4)
-    #t4_3 = t4_3.applyfunc(lambda x: round(x,2))
-    #print('t43 subs:', t4_3)
 
     t5_4 = cg.get_ti2i_1(5)
     t5_4 = t5_4.subs(q5, t5)
-    #t5_4 = t5_4.applyfunc(lambda x: round(x,2))
 
     t6_5 = cg.get_ti2i_1(6)
     t6_5 = t6_5.subs(q6, t6)
     #t6_5 = t6_5.applyfunc(lambda x: round(x,2))
-
-    '''
-    t2_0 = t1_0*t2_1
-    print('t2_0', t2_0)
-
-    t3_0 = t2_0 * t3_2
-    print('t3_0', t3_0)
-    '''
 
     t4_0 = t1_0*t2_1*t3_2*t4_3
     print ('t4_0:', t4_0)
