@@ -1,7 +1,7 @@
 # quiz
 from cmath import acos, atan, pi, sqrt
 from math import radians
-import test as t
+import pieper as pp
 import craig as cg
 import sympy as sp
 from sympy import Symbol, init_printing, solve, sin, cos, symbols, trigsimp, simplify
@@ -125,7 +125,7 @@ def quiz4_5(tc_0):
                     [0,0,0,1]])
     '''
     print('t6_0', t6_0)
-    t.pieper(t6_0)
+    pp.pieper(t6_0)
     # theta3: -158//-35
     # quiz4_6(t6_0, -2.7603560010540047)
     # quiz4_6(t6_0, -0.6168272962769602)

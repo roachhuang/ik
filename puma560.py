@@ -1,11 +1,8 @@
-from cmath import sqrt, tan
+# Ters_kinematik.pdf 3.3.3 / p11
 
-# import math
-from sympy import Matrix, Symbol, Eq, solve, sin, cos, symbols, simplify, trigsimp
-# from sympy.simplify.fu mport
+from cmath import sqrt
 import numpy as np
 import craig as cg
-import sympy as sp
 import pieper as pp
 
 #warnings.filterwarnings('ignore')
@@ -25,6 +22,13 @@ t6_0 = np.array([[-(1 / sqrt(2)), 0, 1 / sqrt(2), 1], [0, -1, 0, 1],
                  [1 / sqrt(2), 0, 1 / sqrt(2), -1], [0, 0, 0, 1]])
 
 pp.pieper(t6_0)
+
+"""
+q1,q2,q3:   24.3, -28.7, 45.9
+            24.3, 102.0, 143.7
+            -114.3, 77.14, 45.9
+            -114.3, -151.32, 143.7
+"""
 
 """
 def getT4_0_org():
