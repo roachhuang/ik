@@ -40,7 +40,6 @@ def pieper(t6_0):
     t1_0=cg.get_ti2i_1(1)
     t2_1=cg.get_ti2i_1(2)
     t3_2=cg.get_ti2i_1(3)
-    #p4_0_org  = t2_1@t3_2@p4_3
 
     #f is a func of theta3
     f=trigsimp(t3_2@p4_3)
@@ -58,6 +57,7 @@ def pieper(t6_0):
 
     '''
     p4_0=[x,y,z,1] = t1_0@g = [c1g1-s1g2, s1g1+c1g2, g3, 1]
+    x=p4_0orgx=c1g1-s1g2, y=s1g1+c1g2
     frame0 to wrist 的長度平方 so as to eliminate q1
     c1g1**2-s1g2**2+s1g1**2+c1g2**2+g3**2=> g1**2(c1**2+s1**2)+g2**2(s1**2+c1**2)+g3**2
     hence, r=x**2+y**2+z**2=g1**2+g2**2+g3**2
@@ -84,7 +84,7 @@ def pieper(t6_0):
         '''
         #q3s=solve(Eq(k3, x**2+y**2+z**2), q3)
         q3s=solve(Eq(r, k3), q3)
-        rExpr=k1*sin(q2)-k2*cos(q2)*sin(alp1)+k4
+        rExpr=(k1*sin(q2)-k2*cos(q2))*sin(alp1)+k4
         lExpr=z
     # general case when a1 != 0 & alpha1 != 0
     # combine k3 and g3
@@ -137,12 +137,6 @@ def pieper(t6_0):
         print('@t3:=', t3*180/pi)
         #print('cos(t3)= {}'.format(cos(t3)))
         rExpr=rExpr.subs(q3, t3)
-        '''
-        aftk1 = k1.subs(q3, t3)
-        aftk2 = k2.subs(q3, t3)
-        aftk3 = k3.subs(q3, t3)
-        rExpr=((aftk1*cos(q2))+(aftk2*sin(q2)))*(2*a1)+aftk3
-        '''
         tmp=solve(Eq(lExpr, rExpr), q2)
         q2s.extend(tmp)
 
@@ -150,33 +144,30 @@ def pieper(t6_0):
     for t2 in q2s:
         print('@t2:=', t2*180/pi)
 
-    '''
     # solve q1: x=c1*g1(q2,q3)-s1*g2(q2,q3)
     for t3 in q3s:
         print('@t3:=', t3*180/pi)
         for t2 in q2s:
             print('@t2:=', t2*180/pi)
-            aftg1 = g1.subs([(q2,t2),(q3, t3)])
-            aftg2 = g2.subs([(q2,t2),(q3, t3)])
-            rExpr=cos(q1)*aftg1-sin(q1)*aftg2
+            rExpr=cos(q1)*g1-sin(q1)*g2
+            rExpr=rExpr.subs([(q2,t2),(q3, t3)])
             tmp=solve(Eq(x, rExpr),q1)
             q1s.extend(tmp)
     q1s=list(dict.fromkeys(q1s))
-    '''
-    q1s.append(atan2(y,x))
-    for t1 in q1s:
-        print('t1:=', t1*180/pi)
 
-    #pc_0
-    #cg.verify_ik(t6_0, 300, 338, 206, q1s, q2s, q3s)
-    t1 = atan2(y,x)
-    expr_x= sp.expand_trig(cos(t1)*g1-sin(t1)*g2)
-    for t2 in q2s:
-        for t3 in q3s:
-            myX = expr_x.subs([(q2,t2),(q3,t3)])
-            # myX=round(myX,2)
-            if isclose(myX,x):
-                print ('q2, q3:', t2*180/pi,t3*180/pi)
+    #verify ik
+    #x=c1g1-s1g2, y=s1g1+c1g2
+    expr_x= sp.expand_trig(cos(q1)*g1-sin(q1)*g2)
+    expr_y= sp.expand_trig(sin(q1)*g1+cos(q1)*g2)
+    expr_z= g3
+    for t1 in q1s:
+        for t2 in q2s:
+            for t3 in q3s:
+                myX = expr_x.subs([(q1, t1), (q2, t2),(q3, t3)])
+                myY = expr_y.subs([(q1, t1), (q2, t2),(q3, t3)])
+                myZ = expr_z.subs([(q2, t2),(q3, t3)])
+                if isclose(myX,x) and isclose(myY,y) and isclose(myZ,z):
+                    print ('q1, q2, q3:', t1*180/pi, t2*180/pi,t3*180/pi)
 
     print('all done!')
 
