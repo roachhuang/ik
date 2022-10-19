@@ -35,8 +35,13 @@ T_inv = np.linalg.inv(T)
 #print(T_inv)
 #print(np.matmul(T_inv, C_of_X))
 np.set_printoptions(precision=3, suppress=True)
-# pad with 0 to form a 12x3 matrix
+# padding the rest with 0 to form a 12x3 matrix
 C.resize(12,3)
 #print(C)
 # output x col, y col and theta col, each col has ai0~ai3 (total 3 lines)
-print(np.round(T_inv @ C, 2))
+print('A:', np.round(T_inv @ C, 2))
+'''quiz5
+ans:
+    1. -5//1.44//2.19//-0.58
+    2.  5.00//1.67//-2.08//0.37
+'''
