@@ -1,7 +1,8 @@
+# traj
 #https://www.coursera.org/learn/robotics1/lecture/bNQfV/4-3-piepers-solution-1
 from cmath import atan, isclose, pi, sqrt
 from math import atan2
-from sympy import Eq, Symbol, init_printing, solve, solveset, sin, cos, simplify, trigsimp
+from sympy import Eq, Symbol, init_printing, solve, solveset, sin, cos, simplify, symbols, trigsimp
 
 import numpy as np
 import sympy as sp
@@ -11,10 +12,45 @@ init_printing(use_unicode=True, use_latex='mathjax')
 np.set_printoptions(precision=3, suppress=True)
 
 
+def ver456(r6_3, q4s, q5s, q6s):
+    for t4 in q4s.real:
+        for t5 in q5s.real:
+            for t6 in q6s.real:
+                t4_3 = cg.get_ti2i_1(4, t4)
+                t5_4 = cg.get_ti2i_1(5, t5)
+                t6_5 = cg.get_ti2i_1(6, t6)
+                t6_3 = t4_3 @ t5_4 @ t6_5
+                R6_3 = t6_3[0:3, 0:3]
+                #print('r6_3:', r6_3)
+                #print('R6_3:', R6_3)
+                if np.allclose(r6_3.astype('float64'), R6_3.astype('float64')):
+                    print('q4, q5, q6:', t4 * 180 / pi, t5 * 180 / pi,
+                          t6 * 180 / pi)
+                    return ([t4, t5, t6])
+
+
+'''
+    for t1 in q4s:
+        for t2 in q5s:
+            for t3 in q6s:
+                #myX = expr_x.subs([(q1, t1), (q2, t2), (q3, t3)])
+                #myY = expr_y.subs([(q1, t1), (q2, t2), (q3, t3)])
+                #myZ = expr_z.subs([(q2, t2), (q3, t3)])
+                #if isclose(myX, x) and isclose(myY, y) and isclose(myZ, z):
+                    #print('q1, q2, q3:', t1 * 180 / pi, t2 * 180 / pi,
+                    #        t3 * 180 / pi)
+                    #qs.append((t1, t2, t3))
+'''
+
+
+# aix 2&3 decide heigh of z and sqt(x**2+y**2)
 # q4,q5, q6
 # refer to must read UCLA ik.pdf for r6_3 )
 # https://univ.deltamoocx.net/courses/course-v1:AT+AT_010_1102+2022_02_01/courseware/a3e573de127b85f1dcb23ea797cd253f/dc947a72e470ca516e9270c3bb4424e1/?child=first
 def ik456(r6_0, q1, q2, q3):
+    q4s = []
+    q5s = []
+    q6s = []
     """
     q4,q5,q6=euler angles phi, theta, psi. see unit5 part3
     R6-3=Rz,phi Ry,theat Rz,psi = Rz,q4 Ry,q5 Rz,q6
@@ -35,6 +71,8 @@ def ik456(r6_0, q1, q2, q3):
     t1 = q1
     t2 = q2
     t3 = q3
+    # r3_0=X(alp0)Z(t1)X(alp1)Z(t2)X(alp2)Z(t3
+    # = X(0)Z(58.61)X(-90)Z(-64.46)X(0)Z(-11.98)
     # this r3_0 uses standard dh table.
     r3_0 = np.array(
         [[cos(t1) * cos(t2 + t3), -cos(t1) * sin(t2 + t3), -sin(t1)],
@@ -43,9 +81,25 @@ def ik456(r6_0, q1, q2, q3):
 
     R3_0 = np.array([[0.6006, 0.7082, -0.3710], [0.24, 0.2830, 0.9286],
                      [0.7627, -0.6468, 0]])
-    print('r3_0', r3_0)
+    #print('r3_0', r3_0)
     r6_3 = np.transpose(r3_0) @ r6_0
-    print('r6-3', r6_3)
+    #print('r6-3', r6_3)
+
+    # Elur angle zyz
+    # firstable rotate r4_3 in x axis to be in line w/ euler,
+    alp3 = cg.dh_tbl[3, 0]
+    r3prime_0 = r3_0 @ cg.Rx(alp3)
+    r6_3prime = np.transpose(r3prime_0) @ r6_0
+    #print('r6_3prime:', r6_3prime)
+    # r6_3prime = r4_3prime_z_y_z(alp, beta, gama)
+    r13 = r6_3prime[0, 2]
+    r23 = r6_3prime[1, 2]
+    r31 = r6_3prime[2, 0]
+    r32 = r6_3prime[2, 1]
+    r33 = r6_3prime[2, 2]
+    beta = atan2(sqrt(r31**2 + r32**2).real, r33)
+    alpa = atan2(r23 / sin(beta), r13 / sin(beta))
+    gama = atan2(r32 / sin(beta), -r31 / sin(beta))
     '''
     r6_3=np.array([[c4c5c6-s4s6, -c4c5s6-s4c6, -c4s5],
                 [s5c6, -s5s6, -c5],
@@ -57,31 +111,40 @@ def ik456(r6_0, q1, q2, q3):
     s5c6 = r6_3[1, 0]
     s5s6 = -r6_3[1, 1]
     print('c5', c5)
+
     # s5!=0, i.e q5 !=0 or pi, s5=+-sqrt(1-c5**2)
     q5_1 = atan(sqrt(1 - c5**2) / c5)
-    print('q5_1:', q5_1 * 180 / pi)
+    q5s = np.append(q5s, q5_1)
+    #print('q5_1:', q5_1 * 180 / pi)
+
     q4_1 = atan2(s4s5, c4s5)
-    print('q4_1:', np.rad2deg(q4_1))
+    q4s = np.append(q4s, q4_1)
+    #print('q4_1:', np.rad2deg(q4_1))
+
     q6_1 = atan2(s5s6, s5c6)
-    print('q6_1', np.rad2deg(q6_1))
+    q6s = np.append(q6s, q6_1)
+    #print('q6_1', np.rad2deg(q6_1))
 
     # s5 < 0, 0 ~ -pi
     q5_2 = atan(-sqrt(1 - c5**2) / c5)
-    print('q5_2', q5_2 * 180 / pi)
+    q5s = np.append(q5s, q5_2)
+    #print('q5_2', q5_2 * 180 / pi)
+
     # coz s5 is neg
     q4_2 = atan2(-s4s5, -c4s5)
-    print('q4_2', np.rad2deg(q4_2))
+    q4s = np.append(q4s, q4_2)
+    #print('q4_2', np.rad2deg(q4_2))
+
     q6_2 = atan2(-s5s6, -s5c6)
-    print('q6_2', np.rad2deg(q6_2))
+    q6s = np.append(q6s, q6_2)
+    #print('q6_2', np.rad2deg(q6_2))
 
     #DH6_3 = np.array([[c(q4-q6), sin(q4-q6),0, 0],
     # sin(q4-q6), -cos(q4-q6),0, 0],
     # [0,0,-1, d4],
     # [0,0,0,1])
     # R6_3=np.transpose(R3_0)@R6_0
-
-
-# get g4~6
+    return ver456(r6_3, q4s, q5s, q6s)
 
 
 def pieper(t6_0):
@@ -127,9 +190,9 @@ def pieper(t6_0):
     g1 = trigsimp(g[0])
     g2 = trigsimp(g[1])
     g3 = trigsimp(g[2])
-    print('g1:', g1)
-    print('g2:', g2)
-    print('g3:', g3)
+    #print('g1:', g1)
+    #print('g2:', g2)
+    #print('g3:', g3)
     '''
     p4_0=[x,y,z,1] = t1_0@g = [c1g1-s1g2, s1g1+c1g2, g3, 1]
     x=p4_0orgx=c1g1-s1g2, y=s1g1+c1g2
@@ -197,37 +260,39 @@ def pieper(t6_0):
         roots = solveset(Eq(lExpr, rExpr), u)
         # print('u:', roots)
         for root in roots:
-            q3s.append(2 * atan2(root, 1))
+            #q3s.append(2 * atan2(root, 1))
+            q3s = np.append(q3s, 2 * atan2(root, 1))
             #rad = 2*atan(root)
 
         # this is for computing q2
         rExpr = (k1 * cos(q2) + k2 * sin(q2)) * 2 * a1 + k3
         lExpr = r
 
-    print('lExpr=r', lExpr, r)
+    #print('lExpr=r', lExpr, r)
     # remove duplicates from the list
     # solve q2: r=(k1*c2+k2*s2)*2*a1+k3
     q3s = list(dict.fromkeys(q3s))
     for t3 in q3s:
-        print('@t3:=', t3 * 180 / pi)
+        #print('@t3:=', t3 * 180 / pi)
         #print('cos(t3)= {}'.format(cos(t3)))
         rExpr = rExpr.subs(q3, t3)
         tmp = solve(Eq(lExpr, rExpr), q2)
         q2s.extend(tmp)
 
     q2s = list(dict.fromkeys(q2s))
-    for t2 in q2s:
-        print('@t2:=', t2 * 180 / pi)
+    #for t2 in q2s:
+        #print('@t2:=', t2 * 180 / pi)
 
-    # solve q1: x=c1*g1(q2,q3)-s1*g2(q2,q3)
+        # solve q1: x=c1*g1(q2,q3)-s1*g2(q2,q3)
     for t3 in q3s:
-        print('@t3:=', t3 * 180 / pi)
+        #print('@t3:=', t3 * 180 / pi)
         for t2 in q2s:
-            print('@t2:=', t2 * 180 / pi)
+            #print('@t2:=', t2 * 180 / pi)
             rExpr = cos(q1) * g1 - sin(q1) * g2
             rExpr = rExpr.subs([(q2, t2), (q3, t3)])
             tmp = solve(Eq(x, rExpr), q1)
             q1s.extend(tmp)
+
     q1s = list(dict.fromkeys(q1s))
 
     #verify ik
@@ -244,7 +309,13 @@ def pieper(t6_0):
                 if isclose(myX, x) and isclose(myY, y) and isclose(myZ, z):
                     print('q1, q2, q3:', t1 * 180 / pi, t2 * 180 / pi,
                           t3 * 180 / pi)
-                    qs.append((t1, t2, t3))
-    for t in qs:
-        ik456(t6_0[0:3, 0:3], t[0], t[1], t[2])
-    print('all done!')
+                    #qs.append((t1, t2, t3))
+                    #q1-3=np.append(qs, [t1,t2,t3])
+                    # qs array contains verified q1~q3
+                    qs = np.append(qs, [t1, t2, t3])
+                    qs = np.append(qs, ik456(t6_0[0:3, 0:3], t1, t2, t3))
+                    # get one verified q1-3 is enough
+                    break
+    print('q1-6:', qs)
+    return qs
+
