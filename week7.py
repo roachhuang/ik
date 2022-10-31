@@ -22,6 +22,8 @@ def main():
         [6, 330, 372, 367, 0, -60, 0],
         [9, 330, 472, 367, 0, -60, 0],
     ])
+
+    
     Tcup_6 = np.array([[0, 0, 1, 0], [0, -1, 0, 0], [1, 0, 0, 206], [0, 0, 0, 1]])
 
     dt1 = C[1, 1] - C[0, 1]
@@ -72,15 +74,20 @@ def main():
 
     # convert cartesian space to joint space: 3 segments 0-2s 2-4s 4-9s
     t6_0 = tc_0_0 @ np.linalg.inv(Tcup_6)
-    pp.pieper(t6_0)
-    # Q12x3 = np.append(Q12x3, q123)
-    t6_0 = tc_0_2 @ np.linalg.inv(Tcup_6)
-    pp.pieper(t6_0)
-    t6_0 = tc_0_6 @ np.linalg.inv(Tcup_6)
-    pp.pieper(t6_0)
-    t6_0 = tc_0_9 @ np.linalg.inv(Tcup_6)
-    pp.pieper(t6_0)
+    q1To6=pp.pieper(t6_0)
+    Q12x3 = np.append(Q12x3, q1To6)
 
+    t6_0 = tc_0_2 @ np.linalg.inv(Tcup_6)
+    q1To6 = pp.pieper(t6_0)
+    Q12x3 = np.append(Q12x3, q1To6)
+
+    t6_0 = tc_0_6 @ np.linalg.inv(Tcup_6)
+    q1To6 = pp.pieper(t6_0)
+    Q12x3 = np.append(Q12x3, q1To6)
+
+    t6_0 = tc_0_9 @ np.linalg.inv(Tcup_6)
+    q1To6 = pp.pieper(t6_0)
+    Q12x3 = np.append(Q12x3, q1To6)
     # print (Q12x1)
     #padding 0 for last 6 rows
     # col:theta1~theat3 of the arm
@@ -101,4 +108,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
