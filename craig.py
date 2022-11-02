@@ -1,5 +1,5 @@
-from cmath import acos, pi
-from math import atan2
+from cmath import acos
+from math import atan2, pi
 from sympy import trigsimp, Symbol, init_printing, sin, cos, symbols
 import numpy as np
 import sympy as sp

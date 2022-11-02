@@ -1,6 +1,6 @@
 # quiz
-from cmath import acos, atan, pi, sqrt
-from math import radians
+# from cmath import acos, atan, pi, sqrt
+from math import radians, pi
 import pieper as pp
 import craig as cg
 import sympy as sp
