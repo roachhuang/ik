@@ -1,8 +1,8 @@
 # traj
 #https://www.coursera.org/learn/robotics1/lecture/bNQfV/4-3-piepers-solution-1
-# from cmath import atan
-from math import atan2, sqrt, pi, isclose
-from sympy import Eq, init_printing, solve, solveset, trigsimp, sin, cos
+# from cmath import isclose
+from math import atan2, pi, isclose
+from sympy import Eq, Symbol, init_printing, solve, solveset, sin, cos, simplify, symbols, trigsimp
 
 import ik456 as ik
 import numpy as np
@@ -10,10 +10,9 @@ import sympy as sp
 import craig as cg
 
 init_printing(use_unicode=True, use_latex='mathjax')
-np.set_printoptions(precision=3, suppress=True)
-
 
 def pieper(t6_0):
+    np.set_printoptions(precision=4, suppress=True)
     q1s = []
     q2s = []
     q3s = []
@@ -29,7 +28,6 @@ def pieper(t6_0):
 
     print('t6_0', t6_0)
     #p4_0_org=P6_0_org
-
     (x, y, z) = t6_0[0:3, 3]
     print('4-0-org:', x, y, z)
 
@@ -38,7 +36,6 @@ def pieper(t6_0):
     #print('p4_3:', p4_3)
     '''
     [x,y,z,1]t=P4_0_org=t1_0@t2_1@t3_2@p4_3_org
-    =
     '''
     t4_3 = cg.get_ti2i_1(4)
     p4_3 = t4_3[:, 3]
@@ -49,14 +46,11 @@ def pieper(t6_0):
 
     #f is a func of theta3
     f = trigsimp(t3_2 @ p4_3)
-    f1 = f[0]
-    f2 = f[1]
-    f3 = f[2]
+    f1, f2, f3 = f[0:3]
     # g is a func of theta2 and theta3
     g = trigsimp(t2_1 @ f)
-    g1 = trigsimp(g[0])
-    g2 = trigsimp(g[1])
-    g3 = trigsimp(g[2])
+    g1, g2, g3 = g[0:3]
+
     #print('g1:', g1)
     #print('g2:', g2)
     #print('g3:', g3)
@@ -124,11 +118,11 @@ def pieper(t6_0):
         rExpr = rExpr.subs([(sin(q3), s3), (cos(q3), c3)])
         rExpr = rExpr.expand()
         #print('rexpr:', rExpr)
-        roots = solveset(Eq(lExpr, rExpr), u, domain=sp.Reals)
+        roots = solveset(Eq(lExpr, rExpr), u)
         # print('u:', roots)
         for root in roots:
             #q3s.append(2 * atan2(root, 1))
-            q3s = np.append(q3s, np.around(2*atan2(root, 1), decimals=3))
+            q3s = np.append(q3s, 2 * atan2(root, 1))
             #rad = 2*atan(root)
 
         # this is for computing q2
@@ -138,16 +132,15 @@ def pieper(t6_0):
     #print('lExpr=r', lExpr, r)
     # remove duplicates from the list
     # solve q2: r=(k1*c2+k2*s2)*2*a1+k3
-    # q3s = list(dict.fromkeys(q3s))
     q3s = [*set(q3s)]
     for t3 in q3s:
         #print('@t3:=', t3 * 180 / pi)
         #print('cos(t3)= {}'.format(cos(t3)))
         rExpr = rExpr.subs(q3, t3)
         tmp = solve(Eq(lExpr, rExpr), q2)
-        q2s.append(np.around(tmp, decimals=3))
+        q2s.extend(tmp)
 
-    # q2s = list(dict.fromkeys(q2s))
+    #q2s = list(dict.fromkeys(q2s))
     q2s = [*set(q2s)]
     #for t2 in q2s:
     #print('@t2:=', t2 * 180 / pi)
@@ -160,14 +153,17 @@ def pieper(t6_0):
             rExpr = cos(q1) * g1 - sin(q1) * g2
             rExpr = rExpr.subs([(q2, t2), (q3, t3)])
             tmp = solve(Eq(x, rExpr), q1)
-            q1s.append(np.around(tmp, decimals=3))
+            q1s.extend(tmp)
 
-    #q1s = list(dict.fromkeys(q1s))
+    # q1s = list(dict.fromkeys(q1s))
     q1s = [*set(q1s)]
+
     #verify ik
     #x=c1g1-s1g2, y=s1g1+c1g2
-    expr_x = sp.expand_trig(cos(q1) * g1 - sin(q1) * g2)
-    expr_y = sp.expand_trig(sin(q1) * g1 + cos(q1) * g2)
+    # expr_x = sp.expand_trig(cos(q1) * g1 - sin(q1) * g2)
+    # expr_y = sp.expand_trig(sin(q1) * g1 + cos(q1) * g2)
+    expr_x = cos(q1) * g1 - sin(q1) * g2
+    expr_y = sin(q1) * g1 + cos(q1) * g2
     expr_z = g3
     for t1 in q1s:
         for t2 in q2s:
@@ -182,12 +178,11 @@ def pieper(t6_0):
                     #q1-3=np.append(qs, [t1,t2,t3])
                     # qs array contains verified q1~q3
                     #qs = np.append(qs, [t1, t2, t3])
-                    q123 = np.array([t1, t2, t3],dtype=np.float16)
+                    q123 = np.array([t1, t2, t3],dtype=np.float64)
                     q456 = ik.ik456(t6_0[0:3, 0:3], t1, t2, t3)
-                    if q456 !='no 456':
-                        qs = np.concatenate((q123, q456))
-                        #qs = np.append(qs, ik.ik456(t6_0[0:3, 0:3], t1, t2, t3))
-                        # get one verified q1-3 is enough
-                        print('q1-6:', np.rad2deg(qs))
-                        return qs
+                    qs = np.concatenate((q123, q456))
+                    #qs = np.append(qs, ik.ik456(t6_0[0:3, 0:3], t1, t2, t3))
+                    # get one verified q1-3 is enough
+                    print('q1-6:', np.rad2deg(qs))
+                    return qs
     return 'no match'

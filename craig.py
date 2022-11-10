@@ -1,8 +1,13 @@
 from cmath import acos
 from math import atan2, pi
 from sympy import trigsimp, Symbol, init_printing, sin, cos, symbols
+
 import numpy as np
-import sympy as sp
+#import sympy as sp
+from math import log10, floor
+
+def my_sigfig(x, sig):
+    return round(x, sig - int(floor(log10(abs(x)))) - 1)
 
 #dh for quiz4
 dh_tbl = []
@@ -41,7 +46,7 @@ def get_ti2i_1(i, theta=None):
     #ci = Symbol('cos'+str(i))
     #si = Symbol('sin'+str(i))
     """
-    t = sp.Matrix([[cos(t), -sin(t), 0, ai],
+    m = np.array([[cos(t), -sin(t), 0, ai],
                   [
                       sin(t) * round(cos(alp), 2),
                       cos(t) * round(cos(alp), 2),
@@ -54,10 +59,8 @@ def get_ti2i_1(i, theta=None):
                       round(cos(alp),2),
                       round(cos(alp),2) * di
                   ], [0, 0, 0, 1]])
-    # print(f't{i}-{i-1}:', t)
-    return (t)
-    """
 
+    """
     m = np.array(
         [[cos(t), -sin(t), 0, ai],
          [sin(t) * cos(alp),
@@ -66,6 +69,7 @@ def get_ti2i_1(i, theta=None):
           cos(t) * sin(alp),
           cos(alp),
           cos(alp) * di], [0, 0, 0, 1]])
+    
     if theta is None:
         #t=t.evalf(2)
         #t = np.round(t.astype(np.double), 2)
