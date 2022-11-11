@@ -2,7 +2,6 @@ import craig as cg
 import numpy as np
 import pieper as pp
 import pandas as pd
-# from sympy import Matrix, Symbol, Eq, solve, sin, cos
 
 def main():
     np.set_printoptions(precision=4, suppress=True)
@@ -15,23 +14,22 @@ def main():
     viaPoint = 2
     # time, x, y, z, tx, ty, tz
     C = np.array([
-        [0, 550, 270, 19.5, 0, 0, 35],
-        [2, 550, 270, 79.5, 0, 0, 35],
-        [6, 330, 372, 367, 0, -60, 0],
-        [9, 330, 472, 367, 0, -60, 0],
+        [0, 630, 364, 20, 0, 0, 0],
+        [3, 630, 304, 220, 60, 0, 0],
+        [7, 630, 220, 24, 180, 0, 0]
     ])
-    dt1 = C[1, 0] - C[0, 0]
-    dt2 = C[2, 0] - C[1, 0]
-    dt3 = C[3, 0] - C[2, 0]
+
     totalPoints, num_cols = C.shape
     segs = totalPoints - 1
-    # substract 頭, 尾
     viaPoints = totalPoints - 2
     DOF=6
 
     Tcup_6 = np.array([[0, 0, 1, 0], [0, -1, 0, 0], [1, 0, 0, 206],
                        [0, 0, 0, 1]])
 
+    dt1 = C[1, 0] - C[0, 0]
+    dt2 = C[2, 0] - C[1, 0]
+    #dt3 = C[3, 0] - C[2, 0]
     T = np.array([[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                   [1, dt1, dt1**2, dt1**3, 0, 0, 0, 0, 0, 0, 0, 0],
                   [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
@@ -72,7 +70,8 @@ def main():
         #print(tc_0[p])
         # convert cartesian space to joint space: 3 segments 0-2s 2-4s 4-9s
         t6_0 = tc_0[p] @ np.linalg.inv(Tcup_6)
-        t6_0[:, 3]=[cg.my_sigfig(i, 4) for i in t6_0[:, 3]]
+        # 取有效數字
+        t6_0[0:3, 3]=[cg.my_sigfig(i, 4) for i in t6_0[0:3, 3]]
         q1To6 = pp.pieper(t6_0)
         qs_p.append(q1To6)
 

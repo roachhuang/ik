@@ -18,6 +18,7 @@ TRAJ = pd.DataFrame(traj, columns=col_names)
 print(TRAJ)
 # 每段parabolic func 區間長0.5s
 durationOfPara = 0.5
+# vel = ds/dt
 for col in range(1, 4):
     v1s = np.append(v1s, t[0,col] / (t[0, 0] - durationOfPara / 2))
     v2s = np.append(v2s, t[1,col] / (t[1, 0]))
@@ -86,7 +87,7 @@ def eq5(t):
         v2=v[2,i]
         a2=a[2,i]
         pos = traj[1,i+1]+v2*dt1+1/2*a2*dt2**2
-        print (pos)
+        print ('t=4', pos)
 
 def eq6(t):
     dt=t-4
@@ -103,10 +104,36 @@ def eq7(t):
         a3=a[3,i]
         pos = traj[2,i+1]+v3*dt1+1/2*a3*dt2**2
         print (pos)
-eq1(0)
-eq2(1)
-eq3(2)
-eq4(3)
+
+
+#eq1(0)
+#eq2(1)
+#eq3(2)
+#eq4(3)
 eq5(4)
-eq6(8)
-eq7(9)
+#eq6(8)
+#eq7(9)
+
+'''
+for t in 9s: every 0.25s
+    switch(t):
+        case (t in 0, 0.5)
+            set a0 to motor
+        case (t in 0.5, 1.75)
+            set v1 to motor
+        case (t in 1.75, 2.25)
+            set a1 to motor
+        case (t in 2.25, 3.75)
+            set v2 to motor
+
+import time
+def setInterval(func, sec):
+    time.sleep(sec)
+    func()
+    setInterval(func(), sec)
+
+def call():
+    print('hello!')
+
+setInterval(call, 3)
+'''

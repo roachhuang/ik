@@ -1,11 +1,12 @@
 from cmath import acos
-from math import atan2, pi
+from math import atan2, pi, sqrt
 from sympy import trigsimp, Symbol, init_printing, sin, cos, symbols
-
 import numpy as np
 #import sympy as sp
 from math import log10, floor
+import pandas as pd
 
+# 取有效數字 sig 位
 def my_sigfig(x, sig):
     return round(x, sig - int(floor(log10(abs(x)))) - 1)
 
@@ -15,18 +16,37 @@ dh_tbl = []
 def setDhTbl(dh):
     global dh_tbl
     dh_tbl = dh
+    col_names = ['alphai-1', 'ai-1', 'di']
+    DH = pd.DataFrame(dh, columns=col_names)
+    print(DH)
+    print(' ')
 
 def Rx(theta):
-    return np.matrix([[1, 0, 0], [0, cos(theta), -sin(theta)],
+    return np.array([[1, 0, 0], [0, cos(theta), -sin(theta)],
                       [0, sin(theta), cos(theta)]])
 
 def Ry(theta):
-    return np.matrix([[cos(theta), 0, sin(theta)], [0, 1, 0],
+    return np.array([[cos(theta), 0, sin(theta)], [0, 1, 0],
                       [-sin(theta), 0, cos(theta)]])
 
 def Rz(theta):
-    return np.matrix([[cos(theta), -sin(theta), 0],
+    return np.array([[cos(theta), -sin(theta), 0],
                       [sin(theta), cos(theta), 0], [0, 0, 1]])
+
+# input: a rotation matrix, output: theta x, y, z in deg
+def rotationMatrixToEulerAngles(R):
+    # assert(isRotationMatrix(R))
+    sy = sqrt(R[0, 0] * R[0, 0] + R[1, 0] * R[1, 0])
+    singular = sy < 1e-6
+    if not singular:
+        x = atan2(R[2, 1], R[2, 2])
+        y = atan2(-R[2, 0], sy)
+        z = atan2(R[1, 0], R[0, 0])
+    else:
+        x = atan2(-R[1, 2], R[1, 1])
+        y = atan2(-R[2, 0], sy)
+        z = 0
+    return np.rad2deg(np.array([x, y, z]))
 
 # ti_i-1
 def get_ti2i_1(i, theta=None):
@@ -69,7 +89,7 @@ def get_ti2i_1(i, theta=None):
           cos(t) * sin(alp),
           cos(alp),
           cos(alp) * di], [0, 0, 0, 1]])
-    
+
     if theta is None:
         #t=t.evalf(2)
         #t = np.round(t.astype(np.double), 2)
