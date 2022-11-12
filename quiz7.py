@@ -5,6 +5,7 @@ import pandas as pd
 
 def main():
     np.set_printoptions(precision=4, suppress=True)
+    # 從機械手臂的Frame {0}座標系來看，杯子的中心（Frame {C}原點）在不同時間點的位置及姿態分別在下表列出。
     dh_tbl = np.array([[0, 0, 0], [np.deg2rad(-90), -30, 0], [0, 340, 0],
                        [np.deg2rad(-90), -40, 338], [np.deg2rad(90), 0, 0],
                        [np.deg2rad(-90), 0, 0]])

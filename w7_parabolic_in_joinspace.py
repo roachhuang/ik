@@ -51,12 +51,11 @@ def main():
         tc_0.append(tf)
         # get t6_0 for each point
         t6_0 = tc_0[i] @ np.linalg.inv(Tcup_6)
-        # replace p with new values
-        # get euler angles from rotation matrix
-        p[i, 4:7] = cg.rotationMatrixToEulerAngles(t6_0)
-        p[i, 1:4] = t6_0[0:3, 3].T
-        pieper(p)
-    # from t6_0 to get P6_0_org 在各點的position and 姿態.
+        # replace p with ik's result - thetas
+        p[i, 1:7] = np.rad2deg(pp.pieper(t6_0))
+
+    col_names = ['ti', 'q1', 'q2', 'q3', 'q4', 'q5', 'q6']
+    P = pd.DataFrame(p, columns=col_names, index=row_names)
     print(P)
     print(' ')
 
@@ -74,8 +73,8 @@ def main():
         v3s = np.append(v3s, t[2, col] / (t[2, 0] - durationOfPara / 2))
     v = np.array([[0, 0, 0, 0, 0, 0], v1s, v2s, v3s, [0, 0, 0, 0, 0, 0]])
     # np.asarray(v)
-    col_names = ['x', 'y', 'z', 'qx', 'qy', 'qz(deg/s)']
     row_names = ['v0', 'v1', 'v2', 'v3', 'vf']
+    col_names = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6']
     V = pd.DataFrame(v, columns=col_names, index=row_names)
     print(V)
 
@@ -87,9 +86,9 @@ def main():
     # plot 建立並繪出各DOF 在每個時間區段軌跡
     # linear/parabolic 共7段 （每段parabolic curve 時間設定為0.5s）
 
-    # ik p0 ~ pf 所有的點 (too many points, not good for cpu loading)
-
-    # FK
+    # ik p0 ~ pf 所有的點
+    # FK to xyz space
+    # plt simulation
 
 
 if __name__ == "__main__":

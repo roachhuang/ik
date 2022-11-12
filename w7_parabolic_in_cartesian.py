@@ -13,7 +13,7 @@ def main():
     cg.setDhTbl(dh_tbl)
 
     viaPoint = 2
-    # time, x, y, z, tx, ty, tz(wrt world frame)
+    # time, x, y, z, tx, ty, tz(wrt world frame), end-effector 在各點的 position and 姿態
     p = np.array([
         [0, 550, 270, 19.5, 0, 0, 35],
         [2, 550, 270, 79.5, 0, 0, 35],  # viapoint1
@@ -85,9 +85,10 @@ def main():
     # plot 建立並繪出各DOF 在每個時間區段軌跡
     # linear/parabolic 共7段 （每段parabolic curve 時間設定為0.5s）
 
-    # ik p0 ~ pf 所有的點 (too many points, not good for cpu loading)
+    # ik p0 ~ pf 所有的點的 theta (too many points, not good for cpu loading)
+    # plot thetas to time for the 6 axes （以此theats 對 time 的關係來control motors)
+    # final verification - FK T6_0=t1_0 @ ... t6_5
+    # plot to simulate
 
-    # FK
-    
 if __name__ == "__main__":
     main()
