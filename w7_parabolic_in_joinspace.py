@@ -4,7 +4,6 @@ import numpy as np
 import pieper as pp
 import pandas as pd
 
-
 def main():
     np.set_printoptions(precision=4, suppress=True)
     dh_tbl = np.array([[0, 0, 0], [np.deg2rad(-90), -30, 0], [0, 340, 0],
@@ -13,7 +12,7 @@ def main():
 
     cg.setDhTbl(dh_tbl)
 
-    viaPoint = 2
+    # 從機械手臂的Frame {0}座標系來看，杯子的中心（Frame {C}原點）在不同時間點的位置及姿態分別在下表列出。
     # time, x, y, z, tx, ty, tz(wrt world frame)
     p = np.array([
         [0, 550, 270, 19.5, 0, 0, 35],

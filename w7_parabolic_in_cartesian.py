@@ -12,7 +12,6 @@ def main():
 
     cg.setDhTbl(dh_tbl)
 
-    viaPoint = 2
     # time, x, y, z, tx, ty, tz(wrt world frame), end-effector 在各點的 position and 姿態
     p = np.array([
         [0, 550, 270, 19.5, 0, 0, 35],

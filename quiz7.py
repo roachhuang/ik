@@ -3,116 +3,104 @@ import numpy as np
 import pieper as pp
 import pandas as pd
 
+#SPACE='cartesion'
+SPACE='joint'
+
 def main():
-    np.set_printoptions(precision=4, suppress=True)
-    # 從機械手臂的Frame {0}座標系來看，杯子的中心（Frame {C}原點）在不同時間點的位置及姿態分別在下表列出。
+    #np.set_printoptions(precision=2, suppress=True)
     dh_tbl = np.array([[0, 0, 0], [np.deg2rad(-90), -30, 0], [0, 340, 0],
                        [np.deg2rad(-90), -40, 338], [np.deg2rad(90), 0, 0],
                        [np.deg2rad(-90), 0, 0]])
 
     cg.setDhTbl(dh_tbl)
 
-    viaPoint = 2
+    # 從機械手臂的Frame {0}座標系來看，杯子的中心（Frame {C}原點）在不同時間點的位置及姿態分別在下表列出。
     # time, x, y, z, tx, ty, tz
-    C = np.array([
+    p = np.array([
         [0, 630, 364, 20, 0, 0, 0],
         [3, 630, 304, 220, 60, 0, 0],
         [7, 630, 220, 24, 180, 0, 0]
-    ])
-
-    totalPoints, num_cols = C.shape
-    segs = totalPoints - 1
-    viaPoints = totalPoints - 2
-    DOF=6
+    ], dtype=float)
+    col_names = ['ti', 'xi', 'yi', 'zi', 'qx', 'qy', 'qz']
+    row_names = ['p0', 'p1', 'p2']
+    P = pd.DataFrame(p, columns=col_names, index=row_names)
+    print(P)
+    print('-------------------------------------------------')
 
     Tcup_6 = np.array([[0, 0, 1, 0], [0, -1, 0, 0], [1, 0, 0, 206],
                        [0, 0, 0, 1]])
+    tc_0 = []
+    # pg 6, compute each point's tc_0 transformation matrix based on cartesion space. range: 0~totalPoints-1
+    tf = np.empty(shape=[4, 4])  #p0 to pf
+    t6_0 = []
+    totalPoints, num_cols = p.shape
+    segs = totalPoints - 1
+    # substract 頭, 尾
+    viaPoints = totalPoints - 2
+    DOF = 6
 
-    dt1 = C[1, 0] - C[0, 0]
-    dt2 = C[2, 0] - C[1, 0]
-    #dt3 = C[3, 0] - C[2, 0]
-    T = np.array([[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                  [1, dt1, dt1**2, dt1**3, 0, 0, 0, 0, 0, 0, 0, 0],
-                  [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-                  [0, 0, 0, 0, 1, dt2, dt2**2, dt2**3, 0, 0, 0, 0],
-                  [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-                  [0, 0, 0, 0, 0, 0, 0, 0, 1, dt3, dt3**2, dt3**3],
-                  [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2 * dt3, 3 * (dt3**2)],
-                  [0, 1, 2 * dt1, 3 * (dt1**2), 0, -1, 0, 0, 0, 0, 0, 0],
-                  [0, 0, 2, 6 * dt1, 0, 0, -2, 0, 0, 0, 0, 0],
-                  [0, 0, 0, 0, 0, 1, 2 * dt2, 3 * (dt2**2), 0, -1, 0, 0],
-                  [0, 0, 0, 0, 0, 0, 2, 6 * dt2, 0, 0, -2, 0]])
-
-    if (np.linalg.det(T) != 0):
-        T_inv = np.linalg.inv(T)
-    else:
-        print('error det == 0; no inverse')
-    # print('inv:', T_inv)
-    #print(np.matmul(T_inv, C_of_X))
-
-    #C_of_Q = np.ndarray(shape=(0, 3), dtype=float)
-    # size of Q = number of points x 6 (DOF)
-    qs_p = []
-    tc_0=[]
-    # transformation matrix
-    tf=np.empty(shape=[4,4])
-    # Q=np.empty(shape=[4*segs, DOF])
-    Q=[]
-
-    # pg 6, compute each point's tc_0 based on cartesion space. range: 0~totalPoints-1
-    for p in range(totalPoints):
-        tx, ty, tz = np.deg2rad(C[p, 4:7])
+    for i in range(totalPoints):
+        tx, ty, tz = np.deg2rad(p[i, 4:7])
         # combine rot and translation vector into transformation matrix
-        tf[:3, :3] = cg.Rx(tx)@cg.Ry(ty)@cg.Rz(tz)   # rotation matrix
-        tf[:3, 3] = C[p, 1:4]  # x,y,z
-        tf[3, :] = [0,0,0,1]
+        tf[:3, :3] = cg.Rx(tx) @ cg.Ry(ty) @ cg.Rz(tz)  # rotation matrix
+        tf[:3, 3] = p[i, 1:4]  # x,y,z
+        tf[3, :] = [0, 0, 0, 1]
         tc_0.append(tf)
-        #print(tc_0[p])
-        # convert cartesian space to joint space: 3 segments 0-2s 2-4s 4-9s
-        t6_0 = tc_0[p] @ np.linalg.inv(Tcup_6)
-        # 取有效數字
-        t6_0[0:3, 3]=[cg.my_sigfig(i, 4) for i in t6_0[0:3, 3]]
-        q1To6 = pp.pieper(t6_0)
-        qs_p.append(q1To6)
+        # get t6_0 for each point
+        t6_0 = tc_0[i] @ np.linalg.inv(Tcup_6)
+        # replace p with ik's result - thetas
+        if SPACE == 'cartesion':
+            col_names = ['ti', 'xi', 'yi', 'zi', 'qx', 'qy', 'qz']
+            p[i, 4:7] = cg.rotationMatrixToEulerAngles(t6_0)
+            p[i, 1:4] = t6_0[0:3, 3].T
+        else:
+            col_names = ['ti', 'q1', 'q2', 'q3', 'q4', 'q5', 'q6']
+            p[i, 1:7] = np.rad2deg(pp.pieper(t6_0))
 
-    # process segments for pos, vel and acc
-    for s in range(segs):
-        # pos
-        Q.append(qs_p[s])
-        Q.append(qs_p[s+1])
+    P = pd.DataFrame(p, columns=col_names, index=row_names)
+    print(P)
+    print(' ')
 
-    Q=np.asarray(Q)
-    Q=np.resize(Q, (4*segs, DOF))
-    row_names=['p0','p1','p1','p2','p2','pf','v0','vf', 'via1_vel','via1_acc', 'via2_vel','via2_acc']
-    col_names=['q1','q2','q3','q4','q5','q6']
-    q = pd.DataFrame(Q,columns=col_names, index=row_names)
-    print(np.rad2deg(q))
+    # 開始規劃 trajectory
+    t = np.diff(p, axis=0)
+    v1s = np.array([])
+    v2s = np.array([])
+    v3s = np.array([])
 
-    # 2 dicimal points accroding to 5-6 exm2
-    A = (np.round(T_inv @ Q, 3))
-    row_names=['a10','a11','a12','a13','a20','a21','a22','a23', 'a30','a31', 'a32','a33']
-    col_names=['q1','q2','q3','q4','q5','q6']
-    a = pd.DataFrame(A,columns=col_names, index=row_names)
+    # 對P6_0 在各點的pos and 姿態, compute vel, 每段parabolic func 區間長0.5s
+    durationOfPara = 0.5
+    for col in range(1, 7):
+        v1s = np.append(v1s, t[0, col] / (t[0, 0] - durationOfPara / 2))
+        v2s = np.append(v2s, t[1, col] / (t[1, 0] - durationOfPara / 2))
+        #v3s = np.append(v3s, t[2, col] / (t[2, 0] - durationOfPara / 2))
+    v = np.array([[0, 0, 0, 0, 0, 0], v1s, v2s, [0, 0, 0, 0, 0, 0]])
+    # np.asarray(v)
+    if SPACE == 'cartesion':
+         col_names = ['xi', 'yi', 'zi', 'qx', 'qy', 'qz']
+    else:
+        col_names = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6']
 
-    # make a0~a3 in one row, 0~1s,2~4s,4~9s in one group(3x4), each group represent one theta
-    # 3xseg, 3xtheta, 4xai
-    #A12x3 = np.transpose(A12x3).reshape(3, 3, 4)
-    #A = np.reshape(A, (3, 3, 4))
-    # A is now a 3-D array
-    # row: theta, col:aij,
-    print(a)
-    via_vel=np.empty(shape=[viaPoints, DOF])
-    via_acc=np.empty(shape=[viaPoints, DOF])
-    for v in range(viaPoints):
-        # vel & acc continuity before and after each via point
-        for j in range(DOF):
-            # get current seg's  coefficients
-            via_vel[v, j] = A[4*(v+1)+1, j]
-            via_acc[v, j] = 2 * A[4*(v+1)+2,j]
+    row_names = ['v0', 'v1', 'v2', 'vf']
+    V = pd.DataFrame(v, columns=col_names, index=row_names)
+    print(V)
 
-    print(np.rad2deg(via_vel))
-    print(np.rad2deg(via_acc))
+    a = np.diff(v, axis=0) / durationOfPara
+    row_names = ['a0', 'a1', 'af']
+    A = pd.DataFrame(a, columns=col_names, index=row_names)
+    print(A)
 
+    # plot 建立並繪出各DOF 在每個時間區段軌跡
+    # linear/parabolic 共7段 （每段parabolic curve 時間設定為0.5s）
+
+    # ik p0 ~ pf 所有的點
+    # FK to xyz space
+    # plt simulation
+
+    # xeq4(t)=x1+v2*dt = 0+1.5(t-2)
+    dt=5-4
+    for i in range(3):
+        v2=v[2,i]
+        pos=p[1,i+1]+v2*dt
+        print (pos)
 if __name__ == "__main__":
     main()
