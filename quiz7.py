@@ -3,8 +3,9 @@ import numpy as np
 import pieper as pp
 import pandas as pd
 
-#SPACE='cartesion'
-SPACE='joint'
+# SPACE='cartesion'
+SPACE = 'joint'
+# https://arduinogetstarted.com/faq/how-to-control-speed-of-servo-motor
 
 def main():
     #np.set_printoptions(precision=2, suppress=True)
@@ -16,11 +17,11 @@ def main():
 
     # 從機械手臂的Frame {0}座標系來看，杯子的中心（Frame {C}原點）在不同時間點的位置及姿態分別在下表列出。
     # time, x, y, z, tx, ty, tz
-    p = np.array([
-        [0, 630, 364, 20, 0, 0, 0],
-        [3, 630, 304, 220, 60, 0, 0],
-        [7, 630, 220, 24, 180, 0, 0]
-    ], dtype=float)
+    p = np.array([[0, 630, 364, 20, 0, 0, 0],
+                  [3, 630, 304, 220, 60, 0, 0],
+                  [7, 630, 220, 24, 180, 0, 0]],
+                 dtype=float)
+
     col_names = ['ti', 'xi', 'yi', 'zi', 'qx', 'qy', 'qz']
     row_names = ['p0', 'p1', 'p2']
     P = pd.DataFrame(p, columns=col_names, index=row_names)
@@ -59,10 +60,11 @@ def main():
 
     P = pd.DataFrame(p, columns=col_names, index=row_names)
     print(P)
-    print(' ')
+    print('-------------------------------------- ')
 
     # 開始規劃 trajectory
     t = np.diff(p, axis=0)
+    # segs + 2(head and tail) = no. of v
     v1s = np.array([])
     v2s = np.array([])
     v3s = np.array([])
@@ -76,31 +78,37 @@ def main():
     v = np.array([[0, 0, 0, 0, 0, 0], v1s, v2s, [0, 0, 0, 0, 0, 0]])
     # np.asarray(v)
     if SPACE == 'cartesion':
-         col_names = ['xi', 'yi', 'zi', 'qx', 'qy', 'qz']
+        col_names = ['xi', 'yi', 'zi', 'qx', 'qy', 'qz']
     else:
         col_names = ['q1', 'q2', 'q3', 'q4', 'q5', 'q6']
 
+    # time 0, 3, 7s
     row_names = ['v0', 'v1', 'v2', 'vf']
     V = pd.DataFrame(v, columns=col_names, index=row_names)
+    # v1: 0.5~2.75, v2: 3.75~6.5. linear segs
     print(V)
 
+    # parabolic segs
     a = np.diff(v, axis=0) / durationOfPara
     row_names = ['a0', 'a1', 'af']
     A = pd.DataFrame(a, columns=col_names, index=row_names)
+    # a0: 0~0.5s, a1:2.75~3.25, af: 6.5~7s
     print(A)
 
-    # plot 建立並繪出各DOF 在每個時間區段軌跡
+    # plot 建立並繪出各DOF 在每個時間區段軌跡, x,y,z to time
+    # plot thetas to time for the 6 axes （以此theats 對 time 的關係來control motors)
     # linear/parabolic 共7段 （每段parabolic curve 時間設定為0.5s）
 
     # ik p0 ~ pf 所有的點
-    # FK to xyz space
+    # FK to xyz space to verify
     # plt simulation
 
     # xeq4(t)=x1+v2*dt = 0+1.5(t-2)
-    dt=5-4
+    dt = 5 - 4
     for i in range(3):
-        v2=v[2,i]
-        pos=p[1,i+1]+v2*dt
-        print (pos)
+        v2 = v[2, i]
+        pos = p[1, i + 1] + v2 * dt
+        print(pos)
+
 if __name__ == "__main__":
     main()

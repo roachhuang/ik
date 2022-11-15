@@ -1,6 +1,7 @@
 # cartesion space
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 np.set_printoptions(precision=2, suppress=True)
 
@@ -48,71 +49,90 @@ xeq6(t)=x2+v3*dt = 3+0.35(t-4)                                          (t in 4.
 xeq7(t)=x2+v3dt1+1/2*a3*dt2**2 = 3+0.36(t-4)+1/2*(-0.73)(t-6.5)**2      (t in 6.5, 7)
 pick some points to run ik
 '''
-#
-def eq1(t):
+totalPoints, num_cols = traj.shape
+segs = totalPoints - 1
+# substract 頭, 尾
+viaPoints = totalPoints - 2
+ts=traj[:, 0]
+# in 0, 0.5s
+def eq1(t, col):
     dt=t-0
-    for i in range(3):
-        v0=v[0,i]
-        a0=a[0,i]
-        pos=traj[0,i+1]+v0*dt+1/2*a0*dt**2
-        print (pos)
+    v0=v[0, col]
+    a0=a[0, col]
+    return traj[0,col+1]+v0*dt+1/2*a0*dt**2
 
-def eq2(t):
+# in 0.5, 1.75
+def eq2(t, col):
     dt=t-0.25
-    for i in range(3):
-        v1=v[1,i]
-        pos=traj[0,i+1]+v1*dt
-        print (pos)
+    v1=v[1,col]
+    return traj[0, col+1]+v1*dt
 
-def eq3(t):
-    for i in range(3):
-        v1=v[1,i]
-        a1=a[1,i]
-        dt1=t-0.25
-        dt2=t-1.75
-        pos=traj[0,i+1]+v1*dt1+1/2*a1*dt2**2
-        print (pos)
+# in 1.7, 2.25
+def eq3(t, col):
+    v1=v[1,col]
+    a1=a[1,col]
+    dt1=t-0.25
+    dt2=t-1.75
+    return traj[0,col+1]+v1*dt1+1/2*a1*dt2**2
 
-def eq4(t):
-    dt=t-2
-    for i in range(3):
-        v2=v[2,i]
-        pos=traj[1,i+1]+v2*dt
-        print (pos)
+# in 2.25, 3.75
+def eq4(t, col):
+    dt=t-ts[1]
+    v2=v[2,col]
+    return traj[1,col+1]+v2*dt
 
-def eq5(t):
-    dt1=t-2
+# 3.75, 4.25
+def eq5(t, col):
+    dt1=t-ts[1]
     dt2=t-3.75
-    for i in range(3):
-        v2=v[2,i]
-        a2=a[2,i]
-        pos = traj[1,i+1]+v2*dt1+1/2*a2*dt2**2
-        print ('t=4', pos)
+    v2=v[2,col]
+    a2=a[2,col]
+    return traj[1,col+1]+v2*dt1+1/2*a2*dt2**2
 
-def eq6(t):
-    dt=t-4
-    for i in range(3):
-        v3=v[3,i]
-        pos=traj[2,i+1]+v3*dt
-        print (pos)
+# 4.25, 6.4
+def eq6(t, col):
+    dt=t-ts[2]
+    v3=v[3,col]
+    return traj[2,col+1]+v3*dt
 
-def eq7(t):
-    dt1=t-4
-    dt2=t-8.5
-    for i in range(3):
-        v3=v[3,i]
-        a3=a[3,i]
-        pos = traj[2,i+1]+v3*dt1+1/2*a3*dt2**2
-        print (pos)
+# col - 0:x, 1:y, 2:theta
+def eq7(t, col):
+    dt1=t-ts[2]
+    dt2=t-(ts[totalPoints-1]-0.5)
+    v3=v[3,col]
+    a3=a[3,col]
+    return traj[2,col+1]+v3*dt1+1/2*a3*dt2**2
 
+# 0 ~ 9s
+timeAxis = np.arange(0.0, 9.0, 0.1)
+inputPoints=[]
+plt.xlabel('Time')
+# col - 0~2, denote x, y or theta data
+for col in range(3):
+    inputPoints=[]
+    plt.ylabel(str(col))
+    for t in timeAxis:
+        if t >= 0 and t < 0.5:
+            inputPoints.append([t, eq1(t, col)])
+        elif t >= 0.5 and t < 1.75:
+            inputPoints.append([t, eq2(t, col)])
+        elif t > 1.75 and t < 2.25:
+            inputPoints.append([t, eq3(t, col)])
+        elif t >= 2.25 and t < 3.75:
+            inputPoints.append([t, eq4(t, col)])
+        elif t > 3.75 and t < 4.25:
+            inputPoints.append([t, eq5(t, col)])
+        elif t >= 4.25 and t < ts[totalPoints-1]-0.5:
+            inputPoints.append([t, eq6(t, col)])
+        elif t > 8.5 and t < ts[totalPoints-1]:
+            inputPoints.append([t, eq7(t, col)])
 
-#eq1(0)
-#eq2(1)
-#eq3(2)
-#eq4(3)
-eq5(4)
-#eq6(8)
-#eq7(9)
+    array_x = [x for x, y in inputPoints]
+    array_y = [y for x, y in inputPoints]
+    # plt.plot(array_x, array_y, marker='o', color='crimson', linestyle='-')
+    plt.plot(array_x, array_y, 'r')
+    plt.show()
+    # plt.pause(5)
 
 '''
 for t in 9s: every 0.25s

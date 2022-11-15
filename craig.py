@@ -6,9 +6,11 @@ import numpy as np
 from math import log10, floor
 import pandas as pd
 
-# 取有效數字 sig 位
+
+# 取有效數字 sig 位, 科學記號表示時就先取有效數字兩位,最後乘上科學記號的冪次
 def my_sigfig(x, sig):
     return round(x, sig - int(floor(log10(abs(x)))) - 1)
+
 
 #dh for quiz4
 dh_tbl = []
@@ -19,21 +21,25 @@ def setDhTbl(dh):
     col_names = ['alphai-1', 'ai-1', 'di']
     DH = pd.DataFrame(dh, columns=col_names)
     print(DH)
-    print(' ')
+    print('------------------------------------ ')
 
 def Rx(theta):
     return np.array([[1, 0, 0], [0, cos(theta), -sin(theta)],
-                      [0, sin(theta), cos(theta)]])
+                     [0, sin(theta), cos(theta)]])
+
 
 def Ry(theta):
     return np.array([[cos(theta), 0, sin(theta)], [0, 1, 0],
-                      [-sin(theta), 0, cos(theta)]])
+                     [-sin(theta), 0, cos(theta)]])
+
 
 def Rz(theta):
-    return np.array([[cos(theta), -sin(theta), 0],
-                      [sin(theta), cos(theta), 0], [0, 0, 1]])
+    return np.array([[cos(theta), -sin(theta), 0], [sin(theta),
+                                                    cos(theta), 0], [0, 0, 1]])
+
 
 # input: a rotation matrix, output: theta x, y, z in deg
+# https://learnopencv.com/rotation-matrix-to-euler-angles/
 def rotationMatrixToEulerAngles(R):
     # assert(isRotationMatrix(R))
     sy = sqrt(R[0, 0] * R[0, 0] + R[1, 0] * R[1, 0])
@@ -47,6 +53,7 @@ def rotationMatrixToEulerAngles(R):
         y = atan2(-R[2, 0], sy)
         z = 0
     return np.rad2deg(np.array([x, y, z]))
+
 
 # ti_i-1
 def get_ti2i_1(i, theta=None):
@@ -100,6 +107,7 @@ def get_ti2i_1(i, theta=None):
         #print (f't{i}-{i-1}:', np.round(t.astype(np.double),2))
         #return (np.format_float_scientific(m))
         return m
+
 
 '''
 ntu:
