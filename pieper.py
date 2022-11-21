@@ -19,7 +19,7 @@ def pieper(t6_0):
     #solved 3 axies in tuple
     qs = []
 
-    u, q1, q2, q3 = sp.symbols('u,q1,q2,q3')
+    u, q1, q2, q3 = symbols('u,q1,q2,q3')
 
     (alp4, a4, d5) = cg.dh_tbl[4, :]
     (alp3, a3, d4) = cg.dh_tbl[3, :]
@@ -178,7 +178,7 @@ def pieper(t6_0):
                     #q1-3=np.append(qs, [t1,t2,t3])
                     # qs array contains verified q1~q3
                     #qs = np.append(qs, [t1, t2, t3])
-                    q123 = np.array([t1, t2, t3],dtype=np.float64)
+                    q123 = np.array([t1, t2, t3],dtype=np.float)
                     q456 = ik.ik456(t6_0[0:3, 0:3], t1, t2, t3)
                     qs = np.concatenate((q123, q456))
                     #qs = np.append(qs, ik.ik456(t6_0[0:3, 0:3], t1, t2, t3))

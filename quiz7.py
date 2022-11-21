@@ -3,8 +3,8 @@ import numpy as np
 import pieper as pp
 import pandas as pd
 
-# SPACE='cartesion'
-SPACE = 'joint'
+SPACE='cartesion'
+# SPACE = 'joint'
 # https://arduinogetstarted.com/faq/how-to-control-speed-of-servo-motor
 
 def main():
@@ -104,10 +104,11 @@ def main():
     # plt simulation
 
     # xeq4(t)=x1+v2*dt = 0+1.5(t-2)
-    dt = 5 - 4
+    dt1 = 5 - 3
+    dt2 = 5 - 2.75
     for i in range(3):
-        v2 = v[2, i]
-        pos = p[1, i + 1] + v2 * dt
+        x=p[1, i + 1]
+        pos = x +  v[2, i] * dt1 +1/2*a[2, i]*dt2**2
         print(pos)
 
 if __name__ == "__main__":

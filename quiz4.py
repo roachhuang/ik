@@ -1,6 +1,6 @@
 # quiz
 # from cmath import acos, atan, pi, sqrt
-from math import radians, pi
+from math import radians, pi, atan2
 import pieper as pp
 import craig as cg
 import sympy as sp
@@ -17,7 +17,6 @@ dh_tbl = np.array([[0, 0, 0], [radians(-90), -30, 0], [0, 340, 0],
                    [radians(-90), 0, 0]])
 cg.setDhTbl(dh_tbl)
 
-
 def quiz2():
     d2, q2 = symbols('d2, q2')
     dh_tbl = np.array([[0, 0, 0], [radians(-90), 0, d2]])
@@ -31,7 +30,6 @@ def quiz2():
     #t2_0.applyfunc(lambda x: round(x,2))
     print('t2_0:', t2_0)
 
-
 def quiz4_3():
     d2 = np.sqrt(69.28**2 + 40**2)
     '''
@@ -44,10 +42,10 @@ def quiz4_3():
 
     cg.setDhTbl(dh_tbl)
     '''
-    q1 = np.arctan2(40, 69.28)
+    #q1 = np.arctan2(40, 69.28)
+    q1 = atan2(40, 69.28)
     print('q1:', q1 * 180 / pi)
     print('d2:', round(d2))
-
 
 # https://www.coursera.org/learn/robotics1/exam/73ksc/quiz-4/attempt?redirectToCover=true
 def quiz4_4():
@@ -79,7 +77,6 @@ def quiz4_4():
     # get coord of end effector
     # return tc_w[0:3, 3]
     return tc_0
-
 
 def quiz4_5(tc_0):
     np.set_printoptions(precision=3, suppress=True)
@@ -129,7 +126,6 @@ def quiz4_5(tc_0):
     #theta2: 12//-50
     #theta1: 64
 
-
 # compute q2
 def quiz4_6(t6_0, q3):
     (x, y, z) = t6_0[0:3, 3]
@@ -148,7 +144,6 @@ def quiz4_6(t6_0, q3):
     print('@q3:=', q3 * 180 / pi)
     print('theta2:=', th2[0] * 180 / pi, th2[1] * 180 / pi)
     return th2
-
 
 quiz4_3()
 tc_0 = quiz4_4()

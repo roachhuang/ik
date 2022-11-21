@@ -1,6 +1,6 @@
 # Ters_kinematik.pdf 3.3.3 / p11
 
-from cmath import sqrt
+from math import sqrt
 import numpy as np
 import craig as cg
 import pieper as pp

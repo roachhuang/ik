@@ -1,6 +1,6 @@
 from cmath import acos
 from math import atan2, pi, sqrt
-from sympy import trigsimp, Symbol, init_printing, sin, cos, symbols
+from sympy import trigsimp, Symbol, init_printing, sin, cos, symbols, simplify
 import numpy as np
 #import sympy as sp
 from math import log10, floor
@@ -59,7 +59,6 @@ def rotationMatrixToEulerAngles(R):
 def get_ti2i_1(i, theta=None):
     init_printing(use_unicode=True)  # use pretty math output
     np.set_printoptions(precision=2, suppress=True)
-    np.printoptions(suppress=True)
 
     # fill in dh tbl wrt robot arms' dh params
 
@@ -101,13 +100,12 @@ def get_ti2i_1(i, theta=None):
         #t=t.evalf(2)
         #t = np.round(t.astype(np.double), 2)
         print(f't{i}-{i-1}:', m)
-        return (m)
+        return m
     else:
         print(f't{i}-{i-1}:', m)
         #print (f't{i}-{i-1}:', np.round(t.astype(np.double),2))
         #return (np.format_float_scientific(m))
         return m
-
 
 '''
 ntu:

@@ -106,33 +106,40 @@ def eq7(t, col):
 # 0 ~ 9s
 timeAxis = np.arange(0.0, 9.0, 0.1)
 inputPoints=[]
+inputPoints.append([])
+inputPoints.append([])
+inputPoints.append([])
 plt.xlabel('Time')
 # col - 0~2, denote x, y or theta data
 for col in range(3):
-    inputPoints=[]
     plt.ylabel(str(col))
     for t in timeAxis:
-        if t >= 0 and t < 0.5:
-            inputPoints.append([t, eq1(t, col)])
-        elif t >= 0.5 and t < 1.75:
-            inputPoints.append([t, eq2(t, col)])
-        elif t > 1.75 and t < 2.25:
-            inputPoints.append([t, eq3(t, col)])
-        elif t >= 2.25 and t < 3.75:
-            inputPoints.append([t, eq4(t, col)])
-        elif t > 3.75 and t < 4.25:
-            inputPoints.append([t, eq5(t, col)])
-        elif t >= 4.25 and t < ts[totalPoints-1]-0.5:
-            inputPoints.append([t, eq6(t, col)])
-        elif t > 8.5 and t < ts[totalPoints-1]:
-            inputPoints.append([t, eq7(t, col)])
+        if t >= 0 and t <= 0.5:
+            inputPoints[col].append(eq1(t, col))
+        elif t > 0.5 and t <= 1.75:
+            inputPoints[col].append(eq2(t, col))
+        elif t > 1.75 and t <= 2.25:
+            inputPoints[col].append(eq3(t, col))
+        elif t > 2.25 and t <= 3.75:
+            inputPoints[col].append(eq4(t, col))
+        elif t > 3.75 and t <= 4.25:
+            inputPoints[col].append(eq5(t, col))
+        elif t > 4.25 and t <= ts[totalPoints-1]-0.5:
+            inputPoints[col].append(eq6(t, col))
+        elif t > 8.5 and t <= ts[totalPoints-1]:
+            inputPoints[col].append(eq7(t, col))
 
-    array_x = [x for x, y in inputPoints]
-    array_y = [y for x, y in inputPoints]
+#array_x = [x for x, y in inputPoints]   # time
+#array_y = [y for x, y in inputPoints]
     # plt.plot(array_x, array_y, marker='o', color='crimson', linestyle='-')
-    plt.plot(array_x, array_y, 'r')
+    plt.plot(timeAxis, inputPoints[col], 'r')
     plt.show()
     # plt.pause(5)
+
+ax = plt.axes(projection='3d')
+# ax.plot3D(inputPoints[0], inputPoints[1], inputPoints[2], 'gray')
+ax.plot3D(inputPoints[0], inputPoints[1], timeAxis, 'gray')
+plt.show()
 
 '''
 for t in 9s: every 0.25s

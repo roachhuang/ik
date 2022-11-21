@@ -23,7 +23,6 @@ ct = 1  # Counter
 
 # Link 1 end point
 for t1 in theta1:
-
     x1 = l1 * math.cos(t1)  # End of link 1
     y1 = l1 * math.sin(t1)  # End of link 1
     for t2 in theta2:
@@ -33,9 +32,11 @@ for t1 in theta1:
 
         filename = str(ct) + '.png'
         ct = ct + 1
-        plt.figure()
+        #plt.figure()
         plt.plot([x0, x1], [y0, y1])
         plt.plot([x1, x2], [y1, y2])
         plt.xlim([-1, 2])
         plt.ylim([-1, 2])
-        plt.savefig(filename)
+        plt.pause(0.2)
+        # plt.savefig(filename)
+plt.show()

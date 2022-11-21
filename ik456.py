@@ -1,9 +1,9 @@
 
 # aix 2&3 decide heigh of z and sqt(x**2+y**2)
 # q4,q5, q6
-# refer to must read UCLA ik.pdf for r6_3 
+# refer to must read UCLA ik.pdf for r6_3
 # https://univ.deltamoocx.net/courses/course-v1:AT+AT_010_1102+2022_02_01/courseware/a3e573de127b85f1dcb23ea797cd253f/dc947a72e470ca516e9270c3bb4424e1/?child=first
-from cmath import atan
+# from cmath import atan
 from math import atan2, cos, sin, sqrt
 import numpy as np
 import craig as cg
@@ -47,23 +47,28 @@ def ik456(r6_0, t1, t2, t3):
      [s1c23,    -s1s23,  -c1 ],
      [s23,  c23,  0   ])
     """
-
+    t3_2=cg.get_ti2i_1(3, t3)
+    t2_1=cg.get_ti2i_1(2, t2)
+    t1_0=cg.get_ti2i_1(1, t1)
+    t3_0 = t1_0@t2_1@t3_2
+    r3_0 = t3_0[0:3, 0:3]
     # r3_0=X(alp0)Z(t1)X(alp1)Z(t2)X(alp2)Z(t3
     # = X(0)Z(58.61)X(-90)Z(-64.46)X(0)Z(-11.98)
     # this r3_0 uses standard dh table.
+    '''
     r3_0 = np.array(
         [[cos(t1) * cos(t2 + t3), -cos(t1) * sin(t2 + t3), -sin(t1)],
          [sin(t1) * cos(t2 + t3), -sin(t1) * sin(t2 + t3),
           cos(t1)], [-sin(t2 + t3), -cos(t2 + t3), 0]], dtype=float)
-    # r3_0 = r3_0.real
+    '''
 
-    R3_0 = np.array([[0.6006, 0.7082, -0.3710], [0.24, 0.2830, 0.9286],
-                     [0.7627, -0.6468, 0]])
-    #print('r3_0', r3_0)
-    r6_3 = np.transpose(r3_0) @ r6_0.real
-    #print('r6-3', r6_3)
+    # print('r3_0', r3_0)
+    print(cg.get_ti2i_1(4) @ cg.get_ti2i_1(5), cg.get_ti2i_1(6))
+    r6_3 = np.transpose(r3_0) @ r6_0
+    print('r6-3', r6_3)
 
-    # Elur angle zyz, NTU
+
+    # Elur angle zyz, NTU; however, puma560's axes 4,5,6 aint the same as ntu's.
     # firstable rotate r4_3 in x axis to be in line w/ euler,
     alp3 = cg.dh_tbl[3, 0]
     r3prime_0 = r3_0 @ cg.Rx(alp3)
@@ -106,7 +111,11 @@ def ik456(r6_0, t1, t2, t3):
                 [-s4c5c6-c4s6, s4c5s6-c4c6, s4s5]])
     '''
 
-    """
+    #-----------------------------------------------------------
+    '''
+    q4s = []
+    q5s = []
+    q6s = []
     c4s5 = -r6_3[0, 2]
     s4s5 = r6_3[2, 2]
     c5 = -r6_3[1, 2]
@@ -115,7 +124,7 @@ def ik456(r6_0, t1, t2, t3):
     print('c5', c5)
 
     # s5!=0, i.e q5 !=0 or pi, s5=+-sqrt(1-c5**2)
-    q5_1 = atan(sqrt(1 - c5**2) / c5)
+    q5_1 = atan2(sqrt(1 - c5**2), c5)
     q5s = np.append(q5s, q5_1)
     #print('q5_1:', q5_1 * 180 / pi)
 
@@ -128,7 +137,7 @@ def ik456(r6_0, t1, t2, t3):
     #print('q6_1', np.rad2deg(q6_1))
 
     # s5 < 0, 0 ~ -pi
-    q5_2 = atan(-sqrt(1 - c5**2) / c5)
+    q5_2 = atan2(-sqrt(1 - c5**2), c5)
     q5s = np.append(q5s, q5_2)
     #print('q5_2', q5_2 * 180 / pi)
 
@@ -140,11 +149,8 @@ def ik456(r6_0, t1, t2, t3):
     q6_2 = atan2(-s5s6, -s5c6)
     q6s = np.append(q6s, q6_2)
     #print('q6_2', np.rad2deg(q6_2))
-    """
-    #DH6_3 = np.array([[c(q4-q6), sin(q4-q6),0, 0],
-    # sin(q4-q6), -cos(q4-q6),0, 0],
-    # [0,0,-1, d4],
-    # [0,0,0,1])
-    # R6_3=np.transpose(R3_0)@R6_0
+    '''
+    #--------------------------------------------------------
+
     print (np.rad2deg(q4s), np.rad2deg(q5s), np.rad2deg(q6s))
     return ver456(r6_3, q4s, q5s, q6s)
