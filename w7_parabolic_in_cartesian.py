@@ -102,7 +102,7 @@ def main():
         v1=v[1,col]
         a1=a[1,col]
         dt1=t-0.25
-        dt2=t-1.75
+        dt2=t-(ts[1]-0.25)
         return p[0,col+1]+v1*dt1+1/2*a1*dt2**2
 
     # in 2.25, 5.75
@@ -114,7 +114,7 @@ def main():
     # 5.75, 6.25
     def eq5(t, col):
         dt1=t-ts[1]
-        dt2=t-5.75
+        dt2=t-(ts[2]-0.25)
         v2=v[2,col]
         a2=a[2,col]
         return p[1,col+1]+v2*dt1+1/2*a2*dt2**2
@@ -147,9 +147,9 @@ def main():
     for col in range(3):
         # plt.ylabel(str(col))
         for t in timeAxis:
-            if t >= 0 and t <= 0.5:
+            if t >= ts[0] and t <= ts[0]+0.5:
                 inputPoints[col].append(eq1(t, col))
-            elif t > 0.5 and t <= ts[1]-0.25:
+            elif t > ts[0]+0.5 and t <= ts[1]-0.25:
                 inputPoints[col].append(eq2(t, col))
             elif t > ts[1]-0.25 and t <= ts[1]+0.25:
                 inputPoints[col].append(eq3(t, col))
@@ -161,7 +161,7 @@ def main():
                 inputPoints[col].append(eq6(t, col))
             elif t > ts[totalPoints-1]-0.5 and t <= ts[totalPoints-1]:
                 inputPoints[col].append(eq7(t, col))
-
+        # this fig has 1 row, 3 col in one page
         plt.subplot(1, 3, col+1)
         plt.plot(timeAxis, inputPoints[col], 'r')
         plt.grid()

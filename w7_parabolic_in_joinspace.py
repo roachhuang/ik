@@ -5,8 +5,6 @@ import pieper as pp
 import pandas as pd
 import matplotlib.pyplot as plt
 
-
-
 def main():
 
     np.set_printoptions(precision=4, suppress=True)
@@ -107,7 +105,7 @@ def main():
         v1=v[1,col]
         a1=a[1,col]
         dt1=t-0.25
-        dt2=t-1.75
+        dt2=t-(ts[1]-0.25)
         return p[0,col+1]+v1*dt1+1/2*a1*dt2**2
 
     # in 2.25, 5.75
@@ -119,7 +117,7 @@ def main():
     # 5.75, 6.25
     def eq5(t, col):
         dt1=t-ts[1]
-        dt2=t-5.75
+        dt2=t-(ts[2]-0.25)
         v2=v[2,col]
         a2=a[2,col]
         return p[1,col+1]+v2*dt1+1/2*a2*dt2**2
@@ -149,19 +147,19 @@ def main():
         inputPoints=[]
         plt.ylabel(str(col))
         for t in timeAxis:
-            if t >= 0 and t < 0.5:
+            if t >= ts[0] and t <= ts[0]+0.5:
                 inputPoints[col].append(eq1(t, col))
-            elif t >= 0.5 and t < 1.75:
+            elif t > ts[0]+0.5 and t <= ts[1]-0.25:
                 inputPoints[col].append(eq2(t, col))
-            elif t > 1.75 and t < 2.25:
+            elif t > ts[1]-0.25 and t <= ts[1]+0.25:
                 inputPoints[col].append(eq3(t, col))
-            elif t >= 2.25 and t < 3.75:
+            elif t > ts[1]+0.25 and t <= ts[2]-0.25:
                 inputPoints[col].append(eq4(t, col))
-            elif t > 3.75 and t < 4.25:
+            elif t > ts[2]-0.25 and t <= ts[2]+0.25:
                 inputPoints[col].append(eq5(t, col))
-            elif t >= 4.25 and t < ts[totalPoints-1]-0.5:
+            elif t > ts[2]+0.25 and t <= ts[totalPoints-1]-0.5:
                 inputPoints[col].append(eq6(t, col))
-            elif t > 8.5 and t < ts[totalPoints-1]:
+            elif t > ts[totalPoints-1]-0.5 and t <= ts[totalPoints-1]:
                 inputPoints[col].append(eq7(t, col))
 
         # plt.plot(array_x, array_y, marker='o', color='crimson', linestyle='-')

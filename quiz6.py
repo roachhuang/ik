@@ -72,7 +72,7 @@ def eq3(t, col):
     v1=v[1,col]
     a1=a[1,col]
     dt1=t-0.25
-    dt2=t-1.75
+    dt2=t-(ts[1]-0.25)
     return traj[0,col+1]+v1*dt1+1/2*a1*dt2**2
 
 # in 2.25, 3.75
@@ -84,7 +84,7 @@ def eq4(t, col):
 # 3.75, 4.25
 def eq5(t, col):
     dt1=t-ts[1]
-    dt2=t-3.75
+    dt2=t-(ts[2]-0.25)
     v2=v[2,col]
     a2=a[2,col]
     return traj[1,col+1]+v2*dt1+1/2*a2*dt2**2
@@ -114,31 +114,34 @@ plt.xlabel('Time')
 for col in range(3):
     plt.ylabel(str(col))
     for t in timeAxis:
-        if t >= 0 and t <= 0.5:
+        if t >= ts[0] and t <= ts[0]+0.5:
             inputPoints[col].append(eq1(t, col))
-        elif t > 0.5 and t <= 1.75:
+        elif t > ts[0]+0.5 and t <= ts[1]-0.25:
             inputPoints[col].append(eq2(t, col))
-        elif t > 1.75 and t <= 2.25:
+        elif t > ts[1]-0.25 and t <= ts[1]+0.25:
             inputPoints[col].append(eq3(t, col))
-        elif t > 2.25 and t <= 3.75:
+        elif t > ts[1]+0.25 and t <= ts[2]-0.25:
             inputPoints[col].append(eq4(t, col))
-        elif t > 3.75 and t <= 4.25:
+        elif t > ts[2]-0.25 and t <= ts[2]+0.25:
             inputPoints[col].append(eq5(t, col))
-        elif t > 4.25 and t <= ts[totalPoints-1]-0.5:
+        elif t > ts[2]+0.25 and t <= ts[totalPoints-1]-0.5:
             inputPoints[col].append(eq6(t, col))
-        elif t > 8.5 and t <= ts[totalPoints-1]:
+        elif t > ts[totalPoints-1]-0.5 and t <= ts[totalPoints-1]:
             inputPoints[col].append(eq7(t, col))
 
-#array_x = [x for x, y in inputPoints]   # time
-#array_y = [y for x, y in inputPoints]
+    #array_x = [x for x, y in inputPoints]   # time
+
     # plt.plot(array_x, array_y, marker='o', color='crimson', linestyle='-')
+    # this fig has 1 row, 3 col in one page
+    plt.subplot(1, 3, col+1)
     plt.plot(timeAxis, inputPoints[col], 'r')
-    plt.show()
+    plt.grid()
+
+plt.show()
     # plt.pause(5)
 
 ax = plt.axes(projection='3d')
-# ax.plot3D(inputPoints[0], inputPoints[1], inputPoints[2], 'gray')
-ax.plot3D(inputPoints[0], inputPoints[1], timeAxis, 'gray')
+ax.plot3D(inputPoints[0], inputPoints[1], timeAxis, 'r')
 plt.show()
 
 '''
