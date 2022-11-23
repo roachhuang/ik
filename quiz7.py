@@ -2,9 +2,11 @@ import craig as cg
 import numpy as np
 import pieper as pp
 import pandas as pd
+import matplotlib.pyplot as plt
+import plan_traj as pt
 
-SPACE='cartesion'
-# SPACE = 'joint'
+#SPACE='cartesion'
+SPACE = 'joint'
 # https://arduinogetstarted.com/faq/how-to-control-speed-of-servo-motor
 
 def main():
@@ -64,6 +66,7 @@ def main():
 
     # 開始規劃 trajectory
     t = np.diff(p, axis=0)
+    print('t size:', np.size(t))
     # segs + 2(head and tail) = no. of v
     v1s = np.array([])
     v2s = np.array([])
@@ -95,6 +98,43 @@ def main():
     # a0: 0~0.5s, a1:2.75~3.25, af: 6.5~7s
     print(A)
 
+    ts = p[:, 0]
+
+    # in 0, 0.5s. col[0~2]: x, y, z
+    def eq1(t, col):
+        dt = t - 0
+        v0 = v[0, col]
+        a0 = a[0, col]
+        return p[0, col + 1] + v0 * dt + 1 / 2 * a0 * dt**2
+
+    # in 0.5, 2.75
+    def eq2(t, col):
+        dt = t - 0.25
+        v1 = v[1, col]
+        return p[0, col + 1] + v1 * dt
+
+    # in 2.75, 3.25
+    def eq3(t, col):
+        v1 = v[1, col]
+        a1 = a[1, col]
+        dt1 = t - 0.25
+        dt2 = t - (ts[1] - 0.25)
+        return p[0, col + 1] + v1 * dt1 + 1 / 2 * a1 * dt2**2
+
+    # in 3.25, 6.5
+    def eq4(t, col):
+        dt = t - ts[1]
+        v2 = v[2, col]
+        return p[1, col + 1] + v2 * dt
+
+    # 6.5, 7
+    def eq5(t, col):
+        dt1 = t - ts[1]
+        dt2 = t - (ts[2] - 0.25)
+        v2 = v[2, col]
+        a2 = a[2, col]
+        return p[1, col + 1] + v2 * dt1 + 1 / 2 * a2 * dt2**2
+
     # plot 建立並繪出各DOF 在每個時間區段軌跡, x,y,z to time
     # plot thetas to time for the 6 axes （以此theats 對 time 的關係來control motors)
     # linear/parabolic 共7段 （每段parabolic curve 時間設定為0.5s）
@@ -103,13 +143,40 @@ def main():
     # FK to xyz space to verify
     # plt simulation
 
-    # xeq4(t)=x1+v2*dt = 0+1.5(t-2)
-    dt1 = 5 - 3
-    dt2 = 5 - 2.75
-    for i in range(3):
-        x=p[1, i + 1]
-        pos = x +  v[2, i] * dt1 +1/2*a[2, i]*dt2**2
-        print(pos)
+   # 0s ~ final second
+    timeAxis = np.arange(0.0, p[totalPoints - 1, 0], 0.1)
+    # inputPoints=[[]*90]*3
+    inputPoints = [[],[],[],[],[],[]]
+
+    # col - 0~2, denote x, y or theta data
+    # q1~q6
+    for col in range(6):
+        for t in timeAxis:
+            if t >= ts[0] and t <= ts[0] + 0.5:
+                inputPoints[col].append(eq1(t, col))
+            elif t > ts[0] + 0.5 and t <= ts[1] - 0.25:
+                inputPoints[col].append(eq2(t, col))
+            elif t > ts[1] - 0.25 and t <= ts[1] + 0.25:
+                inputPoints[col].append(eq3(t, col))
+            elif t > ts[1] + 0.25 and t <= ts[totalPoints - 1] - 0.5:
+                inputPoints[col].append(eq4(t, col))
+            elif t > ts[totalPoints - 1] - 0.5 and t <= ts[totalPoints - 1]:
+                inputPoints[col].append(eq5(t, col))
+        # this fig has 1 row, 3 col in one page
+        plt.subplot(2, 3, col + 1)
+        plt.xlabel('Time')
+        plt.plot(timeAxis, inputPoints[col], 'r')
+        plt.grid()
+    #plt.show()
+
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+    ax.plot3D(inputPoints[0],
+              inputPoints[1],
+              inputPoints[2],
+              color='r',
+              linestyle='dotted')
+    plt.show()
 
 if __name__ == "__main__":
     main()

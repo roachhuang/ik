@@ -40,6 +40,8 @@ C.resize(12,3)
 #print(C)
 # output x col, y col and theta col, each col has ai0~ai3 (total 3 lines)
 print('A:', np.round(T_inv @ C, 2))
+
+
 '''quiz5
 ans:
     1. -5//1.44//2.19//-0.58

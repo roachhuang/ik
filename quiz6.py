@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+#import plan_traj as pt
 
 np.set_printoptions(precision=2, suppress=True)
 
@@ -34,6 +35,8 @@ a = np.diff(v,axis=0)/durationOfPara
 row_names=['a0','a1','a2','af']
 A = pd.DataFrame(a, columns=col_names,  index=row_names)
 print(A)
+
+
 '''
 linear: q(t)=qj+q'jk*dt=q'jk*(t-tqj)
 para:   q(t)=qj+q'jk*dt1+1/2*q"k*dt2**2=qj+q'jk*(t-tqj)+1/2*q"k(t-tqk+1/2tk)**2
@@ -49,6 +52,8 @@ xeq6(t)=x2+v3*dt = 3+0.35(t-4)                                          (t in 4.
 xeq7(t)=x2+v3dt1+1/2*a3*dt2**2 = 3+0.36(t-4)+1/2*(-0.73)(t-6.5)**2      (t in 6.5, 7)
 pick some points to run ik
 '''
+
+
 totalPoints, num_cols = traj.shape
 segs = totalPoints - 1
 # substract 頭, 尾
@@ -105,11 +110,11 @@ def eq7(t, col):
 
 # 0 ~ 9s
 timeAxis = np.arange(0.0, 9.0, 0.1)
-inputPoints=[]
-inputPoints.append([])
-inputPoints.append([])
-inputPoints.append([])
-plt.xlabel('Time')
+inputPoints=[[],[],[]]
+#inputPoints.append([])
+#inputPoints.append([])
+#inputPoints.append([])
+
 # col - 0~2, denote x, y or theta data
 for col in range(3):
     plt.ylabel(str(col))
@@ -134,15 +139,18 @@ for col in range(3):
     # plt.plot(array_x, array_y, marker='o', color='crimson', linestyle='-')
     # this fig has 1 row, 3 col in one page
     plt.subplot(1, 3, col+1)
-    plt.plot(timeAxis, inputPoints[col], 'r')
+    plt.xlabel('Time')
+    plt.plot(timeAxis, inputPoints[col], 'r', label='cubic')
     plt.grid()
 
-plt.show()
+#plt.show()
     # plt.pause(5)
 
+fig = plt.figure()
 ax = plt.axes(projection='3d')
 ax.plot3D(inputPoints[0], inputPoints[1], timeAxis, 'r')
 plt.show()
+
 
 '''
 for t in 9s: every 0.25s
