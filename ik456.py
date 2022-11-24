@@ -70,6 +70,8 @@ def ik456(r6_0, t1, t2, t3):
 
     # Elur angle zyz, NTU; however, puma560's axes 4,5,6 aint the same as ntu's.
     # firstable rotate r4_3 in x axis to be in line w/ euler,
+    # b frame to a frame Rz'y'z'(alp,beta, gamma) = Rz'(alp)Ry'(beta)Rz'(gamma)
+
     alp3 = cg.dh_tbl[3, 0]
     r3prime_0 = r3_0 @ cg.Rx(alp3)
     r6_3prime = r3prime_0.T @ r6_0
@@ -92,17 +94,18 @@ def ik456(r6_0, t1, t2, t3):
     q6s = np.append(q6s, atan2(r32 / sin(beta), -r31 / sin(beta)))
 
     # https://www.meccanismocomplesso.org/en/3d-rotations-and-euler-angles-in-python/
-    """
+
     R = r6_3prime
     eul1 = atan2(R.item(1,2),R.item(0,2))
     sp = sin(eul1)
     cp = cos(eul1)
     eul2 = atan2(cp*R.item(0,2)+sp*R.item(1,2), R.item(2,2))
     eul3 = atan2(-sp*R.item(0,0)+cp*R.item(1,0),-sp*R.item(0,1)+cp*R.item(1,1))
+
     print("phi =", np.rad2deg(eul1))
     print("theta =", np.rad2deg(eul2))
     print("psi =", np.rad2deg(eul3))
-    """
+
 
     '''
     this arr is for reference. don't remove it

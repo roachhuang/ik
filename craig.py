@@ -6,11 +6,9 @@ import numpy as np
 from math import log10, floor
 import pandas as pd
 
-
 # 取有效數字 sig 位, 科學記號表示時就先取有效數字兩位,最後乘上科學記號的冪次
 def my_sigfig(x, sig):
     return round(x, sig - int(floor(log10(abs(x)))) - 1)
-
 
 #dh for quiz4
 dh_tbl = []
@@ -105,7 +103,7 @@ def get_ti2i_1(i, theta=None):
         print(f't{i}-{i-1}:', m)
         #print (f't{i}-{i-1}:', np.round(t.astype(np.double),2))
         #return (np.format_float_scientific(m))
-        return m
+        return m.astype(float)
 
 '''
 ntu:
@@ -181,6 +179,8 @@ def fk_3axes(l1, l2, l3, q1, q2, q3):
     print('x, y:', x, y)
     return (x, y)
 
+def fk_6axes(q):
+    return get_ti2i_1(1, q[0])@get_ti2i_1(2, q[1])@get_ti2i_1(3, q[2])@get_ti2i_1(4, q[3])@get_ti2i_1(5, q[4])@get_ti2i_1(6, q[5])
 
 #l3=206
 # endEffector # tuple (x,y)

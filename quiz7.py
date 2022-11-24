@@ -5,7 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import plan_traj as pt
 
-#SPACE='cartesion'
+# SPACE='cartesion'
 SPACE = 'joint'
 # https://arduinogetstarted.com/faq/how-to-control-speed-of-servo-motor
 
@@ -59,6 +59,9 @@ def main():
         else:
             col_names = ['ti', 'q1', 'q2', 'q3', 'q4', 'q5', 'q6']
             p[i, 1:7] = np.rad2deg(pp.pieper(t6_0))
+            fk_t6_0 = np.around(cg.fk_6axes(np.deg2rad(p[i,1:7])), decimals=1)+0.0
+            print (fk_t6_0)
+            assert np.allclose(np.around(t6_0, decimals=1), fk_t6_0)
 
     P = pd.DataFrame(p, columns=col_names, index=row_names)
     print(P)

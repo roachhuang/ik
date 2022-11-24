@@ -15,7 +15,10 @@ def planTraj(p):
     v1s = np.array([])
     v2s = np.array([])
     v3s = np.array([])
-
+    '''
+    V2k(k=x,y,theta or q1~q6) = dof2-dof1/4s-2s
+    头尾区段: (时间段稍微内移，保证二次项圆滑）
+    '''
     # 對P6_0 在各點的pos and 姿態, compute vel, 每段parabolic func 區間長0.5s
     durationOfPara = 0.5
     for col in range(1, totalPoints*2-1):
@@ -29,6 +32,7 @@ def planTraj(p):
     V = pd.DataFrame(v, columns=col_names, index=row_names)
     print(V)
 
+    # a0=v1-v0/0.5, a1=v2-v1/0.5, a2=v3-v2/0.5, a3-vf-v3/0.5
     a = np.diff(v, axis=0) / durationOfPara
     row_names = ['a0', 'a1', 'a2', 'af']
     A = pd.DataFrame(a, columns=col_names, index=row_names)

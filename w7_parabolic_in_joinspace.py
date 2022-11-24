@@ -6,7 +6,6 @@ import pandas as pd
 import plan_traj as pt
 
 def main():
-
     np.set_printoptions(precision=4, suppress=True)
     dh_tbl = np.array([[0, 0, 0], [np.deg2rad(-90), -30, 0], [0, 340, 0],
                        [np.deg2rad(-90), -40, 338], [np.deg2rad(90), 0, 0],
@@ -54,6 +53,10 @@ def main():
         t6_0 = tc_0[i] @ np.linalg.inv(Tcup_6)
         # replace p with ik's result - thetas
         p[i, 1:7] = np.rad2deg(pp.pieper(t6_0))
+        # fk to see if q1-q6 computed by ik are correct
+        fk_t6_0 = np.around(cg.fk_6axes(np.deg2rad(p[i,1:7])), decimals=1)+0.0
+        print (fk_t6_0)
+        assert np.allclose(np.around(t6_0, decimals=1), fk_t6_0)
 
     col_names = ['ti', 'q1', 'q2', 'q3', 'q4', 'q5', 'q6']
     P = pd.DataFrame(p, columns=col_names, index=row_names)
@@ -87,13 +90,13 @@ def main():
 
     pt.planTraj(p)
 
-
     # plot 建立並繪出各DOF 在每個時間區段軌跡
     # linear/parabolic 共7段 （每段parabolic curve 時間設定為0.5s）
 
     # ik p0 ~ pf 所有的點
     # FK to xyz space
     # plt simulation
+
 
 if __name__ == "__main__":
     main()
