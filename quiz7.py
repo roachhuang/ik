@@ -5,8 +5,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import plan_traj as pt
 
-# SPACE='cartesion'
-SPACE = 'joint'
+SPACE='cartesion'
+#SPACE = 'joint'
 # https://arduinogetstarted.com/faq/how-to-control-speed-of-servo-motor
 
 def main():

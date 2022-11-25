@@ -54,6 +54,7 @@ def main():
         # replace p with ik's result - thetas
         p[i, 1:7] = np.rad2deg(pp.pieper(t6_0))
         # fk to see if q1-q6 computed by ik are correct
+        # +0.0 to fix -0 in array, decimals=1 for fixing allclose returns false if decimals=2
         fk_t6_0 = np.around(cg.fk_6axes(np.deg2rad(p[i,1:7])), decimals=1)+0.0
         print (fk_t6_0)
         assert np.allclose(np.around(t6_0, decimals=1), fk_t6_0)
