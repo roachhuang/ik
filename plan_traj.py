@@ -1,14 +1,14 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-
+# import plotly.express as px
 
 # 開始規劃 trajectory
 def planTraj(p):
     totalPoints, num_cols = p.shape
-    num_of_eq = 2*totalPoints-1
+    num_of_eq = 2 * totalPoints - 1
     segs = totalPoints - 1
-    num_of_v = segs + 2 # 頭+尾 2 個
+    num_of_v = segs + 2  # 頭+尾 2 個
     # substract 頭, 尾
     viaPoints = totalPoints - 2
 
@@ -35,7 +35,6 @@ def planTraj(p):
     col_names = [str(c) for c in range(1, num_cols)]
     # col_names = ['x', 'y', 'z', 'qx', 'qy', 'qz(deg/s)']
 
-
     row_names = ['v0', 'v1', 'v2', 'v3', 'vf']
     V = pd.DataFrame(v, columns=col_names, index=row_names)
     print(V)
@@ -50,11 +49,12 @@ def planTraj(p):
 
     # 0s ~ final second
     timeAxis = np.arange(0.0, p[totalPoints - 1, 0], 0.1)
-    inputPoints=[[]*1 for _ in range(num_cols-1)]
+    inputPoints = [[] * 1 for _ in range(num_cols - 1)]
+
     # dd=np.array([[]*1]*(num_cols-1))
     #inputPoints = [[],[],[],[],[],[]]
 
-        # in 0, 0.5s. col[0~2]: x, y, z
+    # in 0, 0.5s. col[0~2]: x, y, z
     def eq1(t, col):
         dt = t - 0
         v0 = v[0, col]
@@ -107,10 +107,11 @@ def planTraj(p):
     # col - 0~2, denote x, y or theta data
     # inputPoints=np.empty((3, 90))
     # 6 DOF, num_col includes time column, so -1
-    fig_col=3
-    fig_row=int((num_cols-1)/fig_col)
-    # plt.xlabel('Time')
-    for col in range(num_cols-1):
+    fig_col = 3
+    fig_row = int((num_cols - 1) / fig_col)
+    fig=plt.figure()
+
+    for col in range(num_cols - 1):
         for t in timeAxis:
             if t >= ts[0] and t <= ts[0] + 0.5:
                 inputPoints[col].append(eq1(t, col))
@@ -127,20 +128,30 @@ def planTraj(p):
             elif t > ts[totalPoints - 1] - 0.5 and t <= ts[totalPoints - 1]:
                 inputPoints[col].append(eq7(t, col))
         # this fig has 1 row, 3 col in one page
-        plt.subplot(fig_row, fig_col, col+1)
+
+        plt.subplot(fig_row, fig_col, col + 1, title=f'{col+1} to time')  # (rows, columns, panel number)
         plt.plot(timeAxis, inputPoints[col], 'r')
+        plt.xlabel('Time')
         plt.grid()
+        #plt.style.use('seaborn-whitegrid')
     #plt.show()
 
     fig = plt.figure()
     ax = plt.axes(projection='3d')
     # in the case of time, x, y and theta
-    if (num_cols==4):
-        ax.plot3D(inputPoints[0], inputPoints[1], timeAxis, 'r')
+    ax.set_xlabel("X Label")
+    ax.set_ylabel("Y Label")
+    if (num_cols == 4):
+        ax.set_zlabel("Time Label")
+        # ax.plot3D(inputPoints[0], inputPoints[1], timeAxis, 'r')
+        ax.scatter3D(inputPoints[0], inputPoints[1], timeAxis, c=timeAxis)
     else:
-        ax.plot3D(inputPoints[0],
-              inputPoints[1],
-              inputPoints[2],
-              color='r',
-              linestyle='dotted')
+        ax.set_zlabel("Z Label")
+        #data = pd.DataFrame({'X':inputPoints[0], 'Y':inputPoints[1], 'Z':inputPoints[2],'Time':timeAxis})
+        #fig = px.scatter_3d(data, x = "X", y = "Y", z = "Z", hover_data = ["Time"])
+
+        # ax.plot3D(inputPoints[0], inputPoints[1], inputPoints[2], color='r', linestyle='dotted')
+        ax.scatter3D(inputPoints[0], inputPoints[1], inputPoints[2], color='g')
+
+    #fig.show()
     plt.show()

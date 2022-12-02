@@ -5,9 +5,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import plan_traj as pt
 
-SPACE='cartesion'
+SPACE = 'cartesion'
 #SPACE = 'joint'
 # https://arduinogetstarted.com/faq/how-to-control-speed-of-servo-motor
+
 
 def main():
     #np.set_printoptions(precision=2, suppress=True)
@@ -19,8 +20,7 @@ def main():
 
     # 從機械手臂的Frame {0}座標系來看，杯子的中心（Frame {C}原點）在不同時間點的位置及姿態分別在下表列出。
     # time, x, y, z, tx, ty, tz
-    p = np.array([[0, 630, 364, 20, 0, 0, 0],
-                  [3, 630, 304, 220, 60, 0, 0],
+    p = np.array([[0, 630, 364, 20, 0, 0, 0], [3, 630, 304, 220, 60, 0, 0],
                   [7, 630, 220, 24, 180, 0, 0]],
                  dtype=float)
 
@@ -59,8 +59,9 @@ def main():
         else:
             col_names = ['ti', 'q1', 'q2', 'q3', 'q4', 'q5', 'q6']
             p[i, 1:7] = np.rad2deg(pp.pieper(t6_0))
-            fk_t6_0 = np.around(cg.fk_6axes(np.deg2rad(p[i,1:7])), decimals=1)+0.0
-            print (fk_t6_0)
+            fk_t6_0 = np.around(cg.fk_6axes(np.deg2rad(p[i, 1:7])),
+                                decimals=1) + 0.0
+            print(fk_t6_0)
             assert np.allclose(np.around(t6_0, decimals=1), fk_t6_0)
 
     P = pd.DataFrame(p, columns=col_names, index=row_names)
@@ -146,10 +147,10 @@ def main():
     # FK to xyz space to verify
     # plt simulation
 
-   # 0s ~ final second
+# 0s ~ final second
     timeAxis = np.arange(0.0, p[totalPoints - 1, 0], 0.1)
     # inputPoints=[[]*90]*3
-    inputPoints = [[],[],[],[],[],[]]
+    inputPoints = [[], [], [], [], [], []]
 
     # col - 0~2, denote x, y or theta data
     # q1~q6

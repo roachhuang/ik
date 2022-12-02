@@ -3,5 +3,6 @@
         "editor.defaultFormatter": "ms-python.python"
     },
     "editor.fontLigatures": false,
-    "python.analysis.typeCheckingMode": "basic"
+    "python.analysis.typeCheckingMode": "basic",
+    "python.formatting.provider": "yapf"
 }

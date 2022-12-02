@@ -60,7 +60,6 @@ def main():
 
     pt.planTraj(p)
 
-
     # plot 建立並繪出各DOF 在每個時間區段軌跡
     # linear/parabolic 共7段 （每段parabolic curve 時間設定為0.5s）
 

@@ -27,6 +27,13 @@ t6 = np.deg2rad(25)
 
 # note: 四捨五入至兩位有效數字
 def quiz4():
+    # dh table for puma560
+    dh_tbl = np.array([[0, 0, 0], [np.deg2rad(-90), 0, 220], [0, 430, -90],
+                       [np.deg2rad(-90), 0, 430], [np.deg2rad(90), 0, 0],
+                       [np.deg2rad(-90), 0, 0]])
+
+    cg.setDhTbl(dh_tbl)
+
     t1_0 = cg.get_ti2i_1(1, t1)
     # substitute q1 with t1
     #t1_0 = t1_0.subs(q1, t1)
@@ -53,11 +60,17 @@ def quiz4():
     #t40 = np.round(t4_0.astype(np.double), decimals=2)
     p4_0 = t4_0[:, 3]
     for x in p4_0:
-        print(cg.my_sigfig(x,2))
+        print('ans4:', cg.my_sigfig(x,2))
     # print('p4_0:', cg.my_sigfig(p4_0, 2))
 
-    t6_0 = t4_0 * t5_4 * t6_5
+    t6_0 = t4_0 @ t5_4 @ t6_5
     print ('t6_0:', np.round(t6_0.astype(np.double),2))
+    # below is just for 1-d array
+    # t6_0 = np.array([cg.my_sigfig(num, 2) for num in t6_0])
+    
+    #sig=np.vectorize(cg.my_sigfig)
+    #result=sig(t6_0)
+    #print('t6_0:', result)
 
     #ans to quiz4: 700//320//280
     #ans to quiz2: 0//430//-90//90//0//0
