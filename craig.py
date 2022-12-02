@@ -1,5 +1,6 @@
 from cmath import acos
 from math import atan2, pi, sqrt
+# the reason for importing cos and sin from sympy is Rot case (can't import them from math, plz note!!!)
 from sympy import trigsimp, Symbol, init_printing, sin, cos, symbols, simplify
 import numpy as np
 #import sympy as sp
@@ -12,10 +13,8 @@ np.set_printoptions(precision=2, suppress=True)
 def my_sigfig(x, sig=2):
     return round(x, sig - int(floor(log10(abs(x)))) - 1)
 
-
 #dh for quiz4
 dh_tbl = []
-
 
 def setDhTbl(dh):
     global dh_tbl

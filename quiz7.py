@@ -45,7 +45,7 @@ def main():
     for i in range(totalPoints):
         tx, ty, tz = np.deg2rad(p[i, 4:7])
         # combine rot and translation vector into transformation matrix
-        tf[:3, :3] = cg.Rx(tx) @ cg.Ry(ty) @ cg.Rz(tz)  # rotation matrix
+        tf[:3, :3] = cg.Rot('x', tx) @ cg.Rot('y', ty) @ cg.Rot('z', tz)  # rotation matrix
         tf[:3, 3] = p[i, 1:4]  # x,y,z
         tf[3, :] = [0, 0, 0, 1]
         tc_0.append(tf)
