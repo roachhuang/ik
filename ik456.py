@@ -20,8 +20,7 @@ def ver456(r6_3, q4s, q5s, q6s):
                 #print('r6_3:', r6_3)
                 #print('R6_3:', R6_3)
                 if np.allclose(r6_3.astype('float16'), R6_3.astype('float16')):
-                    print('q4, q5, q6:', t4 * 180 / np.pi, t5 * 180 / np.pi,
-                          t6 * 180 / np.pi)
+                    print(f'q4:{t4 * 180 / np.pi}, q5:{t5 * 180 / np.pi}, q6:{t6 * 180 / np.pi}')
                     return (np.array([t4, t5, t6], dtype=np.float16))
     return 'no 456'
 
@@ -65,7 +64,7 @@ def ik456(r6_0, t1, t2, t3):
     # print('r3_0', r3_0)
     print(cg.get_ti2i_1(4) @ cg.get_ti2i_1(5), cg.get_ti2i_1(6))
     r6_3 = np.transpose(r3_0) @ r6_0
-    print('r6-3', r6_3)
+    print('r6-3=', r6_3)
 
 
     # Elur angle zyz, NTU; however, puma560's axes 4,5,6 aint the same as ntu's.
@@ -73,7 +72,7 @@ def ik456(r6_0, t1, t2, t3):
     # b frame to a frame Rz'y'z'(alp,beta, gamma) = Rz'(alp)Ry'(beta)Rz'(gamma)
 
     alp3 = cg.dh_tbl[3, 0]
-    r3prime_0 = r3_0 @ cg.Rx(alp3)
+    r3prime_0 = r3_0 @ cg.Rot('x', alp3)
     r6_3prime = r3prime_0.T @ r6_0
     r6_3prime=r6_3prime.real
     #print('r6_3prime:', r6_3prime)
@@ -102,10 +101,7 @@ def ik456(r6_0, t1, t2, t3):
     eul2 = atan2(cp*R.item(0,2)+sp*R.item(1,2), R.item(2,2))
     eul3 = atan2(-sp*R.item(0,0)+cp*R.item(1,0),-sp*R.item(0,1)+cp*R.item(1,1))
 
-    print("phi =", np.rad2deg(eul1))
-    print("theta =", np.rad2deg(eul2))
-    print("psi =", np.rad2deg(eul3))
-
+    print(f'phi={np.rad2deg(eul1)}, theta={np.rad2deg(eul2)}, psi={np.rad2deg(eul3)}')
 
     '''
     this arr is for reference. don't remove it
@@ -155,5 +151,5 @@ def ik456(r6_0, t1, t2, t3):
     '''
     #--------------------------------------------------------
 
-    print (np.rad2deg(q4s), np.rad2deg(q5s), np.rad2deg(q6s))
+    print(f'q4= {np.rad2deg(q4s)}, q5= {np.rad2deg(q5s)}, q6= {np.rad2deg(q6s)}')
     return ver456(r6_3, q4s, q5s, q6s)

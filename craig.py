@@ -180,7 +180,7 @@ def extract_num(inp_str):
 def fk_3axes(l1, l2, l3, q1, q2, q3):
     x = l1 * cos(q1) + l2 * cos(q1 + q2) + l3 * cos(q1 + q2 + q3)
     y = l1 * sin(q1) + l2 * sin(q1 + q2) + l3 * sin(q1 + q2 + q3)
-    print('x, y:', x, y)
+    print(f'x, y: {x, y}')
     return (x, y)
 
 

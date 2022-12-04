@@ -45,7 +45,7 @@ def main():
     for i in range(totalPoints):
         tx, ty, tz = np.deg2rad(p[i, 4:7])
         # combine rot and translation vector into transformation matrix
-        tf[:3, :3] = cg.Rx(tx) @ cg.Ry(ty) @ cg.Rz(tz)  # rotation matrix
+        tf[:3, :3] = cg.Rot('x', tx) @ cg.Rot('y', ty) @ cg.Rot('z', tz)  # rotation matrix
         tf[:3, 3] = p[i, 1:4]  # x,y,z
         tf[3, :] = [0, 0, 0, 1]
         tc_0.append(tf)
@@ -56,7 +56,7 @@ def main():
         # fk to see if q1-q6 computed by ik are correct
         # +0.0 to fix -0 in array, decimals=1 for fixing allclose returns false if decimals=2
         fk_t6_0 = np.around(cg.fk_6axes(np.deg2rad(p[i,1:7])), decimals=1)+0.0
-        print (fk_t6_0)
+        print (f'fk_t6_0: {fk_t6_0}')
         assert np.allclose(np.around(t6_0, decimals=1), fk_t6_0)
 
     col_names = ['ti', 'q1', 'q2', 'q3', 'q4', 'q5', 'q6']

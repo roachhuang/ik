@@ -5,13 +5,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import plan_traj as pt
 
-SPACE = 'cartesion'
-#SPACE = 'joint'
+#SPACE = 'cartesion'
+SPACE = 'joint'
 # https://arduinogetstarted.com/faq/how-to-control-speed-of-servo-motor
 
 
 def main():
-    #np.set_printoptions(precision=2, suppress=True)
+    np.set_printoptions(suppress=True)
     dh_tbl = np.array([[0, 0, 0], [np.deg2rad(-90), -30, 0], [0, 340, 0],
                        [np.deg2rad(-90), -40, 338], [np.deg2rad(90), 0, 0],
                        [np.deg2rad(-90), 0, 0]])
@@ -70,7 +70,7 @@ def main():
 
     # 開始規劃 trajectory
     t = np.diff(p, axis=0)
-    print('t size:', np.size(t))
+    print(f't size: {np.size(t)}')
     # segs + 2(head and tail) = no. of v
     v1s = np.array([])
     v2s = np.array([])

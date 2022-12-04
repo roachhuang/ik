@@ -172,8 +172,7 @@ def pieper(t6_0):
                 myY = expr_y.subs([(q1, t1), (q2, t2), (q3, t3)])
                 myZ = expr_z.subs([(q2, t2), (q3, t3)])
                 if isclose(myX, x) and isclose(myY, y) and isclose(myZ, z):
-                    print('q1, q2, q3:', t1 * 180 / pi, t2 * 180 / pi,
-                          t3 * 180 / pi)
+                    print(f'q1: {t1 * 180 / pi}, q2: {t2 * 180 / pi}, q3: {t3 * 180 / pi}')
                     #qs.append((t1, t2, t3))
                     #q1-3=np.append(qs, [t1,t2,t3])
                     # qs array contains verified q1~q3
@@ -183,6 +182,6 @@ def pieper(t6_0):
                     qs = np.concatenate((q123, q456))
                     #qs = np.append(qs, ik.ik456(t6_0[0:3, 0:3], t1, t2, t3))
                     # get one verified q1-3 is enough
-                    print('q1-6:', np.rad2deg(qs))
+                    print(f'q1-6: {np.rad2deg(qs)}')
                     return qs
     return 'no match'
