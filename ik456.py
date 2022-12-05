@@ -4,9 +4,10 @@
 # refer to must read UCLA ik.pdf for r6_3
 # https://univ.deltamoocx.net/courses/course-v1:AT+AT_010_1102+2022_02_01/courseware/a3e573de127b85f1dcb23ea797cd253f/dc947a72e470ca516e9270c3bb4424e1/?child=first
 # from cmath import atan
-from math import atan2, cos, sin, sqrt
+from math import atan2, cos, sin, acos, asin, sqrt
 import numpy as np
 import craig as cg
+from sympy import symbols, simplify
 
 def ver456(r6_3, q4s, q5s, q6s):
     for t4 in q4s.real:
@@ -19,10 +20,35 @@ def ver456(r6_3, q4s, q5s, q6s):
                 R6_3 = t6_3[0:3, 0:3]
                 #print('r6_3:', r6_3)
                 #print('R6_3:', R6_3)
-                if np.allclose(r6_3.astype('float16'), R6_3.astype('float16')):
+                R6_3=R6_3.astype(np.float64)
+                if np.allclose(r6_3, R6_3):
                     print(f'q4:{t4 * 180 / np.pi}, q5:{t5 * 180 / np.pi}, q6:{t6 * 180 / np.pi}')
                     return (np.array([t4, t5, t6], dtype=np.float16))
     return 'no 456'
+
+def ik4_5_6(r6_0, t1, t2, t3):
+    # np.set_printoptions(precision=4, suppress=True)
+    q1,q2,q3 = symbols('q1, q2, q3')
+    t4_3=cg.get_ti2i_1(4)
+    t5_4=cg.get_ti2i_1(5)
+    t6_5=cg.get_ti2i_1(6)
+    R6_3=t4_3[0:3, 0:3]@t5_4[0:3, 0:3]@t6_5[0:3, 0:3]
+    print(f'R6_3={R6_3}')
+
+    t3_2=cg.get_ti2i_1(3, t3)
+    t2_1=cg.get_ti2i_1(2, t2)
+    t1_0=cg.get_ti2i_1(1, t1)
+    r3_0 = t1_0[0:3, 0:3]@t2_1[0:3, 0:3]@t3_2[0:3, 0:3]
+    r6_3 = np.transpose(r3_0) @ r6_0
+    print(f'r6_3= {r6_3}')
+    # r6_3[1,2]=cos(q5)
+    q5 = atan2(r6_3[1,2], sqrt(1-(r6_3[1,2])**2))
+    print(np.rad2deg(q5))
+    q5 = atan2(r6_3[1,2], -sqrt(1-(r6_3[1,2])**2))
+    print(np.rad2deg(q5))
+    q4 = atan2(-r6_3[0,2], r6_3[2,2])
+    q6 = atan2(r6_3[1,0], -r6_3[1,1])
+    print(f'q4={np.rad2deg(q4)}, q6={np.rad2deg(q6)}')
 
 # input: radian
 def ik456(r6_0, t1, t2, t3):
@@ -62,7 +88,7 @@ def ik456(r6_0, t1, t2, t3):
     '''
 
     # print('r3_0', r3_0)
-    print(cg.get_ti2i_1(4) @ cg.get_ti2i_1(5), cg.get_ti2i_1(6))
+    # print(cg.get_ti2i_1(4) @ cg.get_ti2i_1(5), cg.get_ti2i_1(6))
     r6_3 = np.transpose(r3_0) @ r6_0
     print('r6-3=', r6_3)
 
@@ -74,7 +100,7 @@ def ik456(r6_0, t1, t2, t3):
     alp3 = cg.dh_tbl[3, 0]
     r3prime_0 = r3_0 @ cg.Rot('x', alp3)
     r6_3prime = r3prime_0.T @ r6_0
-    r6_3prime=r6_3prime.real
+    r6_3prime=r6_3prime
     #print('r6_3prime:', r6_3prime)
     # r6_3prime = r4_3prime_z_y_z(alp, beta, gama)
     r13 = r6_3prime[0, 2]
@@ -93,7 +119,7 @@ def ik456(r6_0, t1, t2, t3):
     q6s = np.append(q6s, atan2(r32 / sin(beta), -r31 / sin(beta)))
 
     # https://www.meccanismocomplesso.org/en/3d-rotations-and-euler-angles-in-python/
-
+    """
     R = r6_3prime
     eul1 = atan2(R.item(1,2),R.item(0,2))
     sp = sin(eul1)
@@ -102,11 +128,12 @@ def ik456(r6_0, t1, t2, t3):
     eul3 = atan2(-sp*R.item(0,0)+cp*R.item(1,0),-sp*R.item(0,1)+cp*R.item(1,1))
 
     print(f'phi={np.rad2deg(eul1)}, theta={np.rad2deg(eul2)}, psi={np.rad2deg(eul3)}')
+    """
 
     '''
     this arr is for reference. don't remove it
-    r6_3=np.array([[c4c5c6-s4s6, -c4c5s6-s4c6, -c4s5],
-                [s5c6, -s5s6, -c5],
+    r6_3=np.array([[-c4c5c6-s4s6, -c4c5s6-s4c6, -c4s5],
+                [s5c6, -s5s6, c5],
                 [-s4c5c6-c4s6, s4c5s6-c4c6, s4s5]])
     '''
 

@@ -44,10 +44,12 @@ def pieper(t6_0):
     t2_1 = cg.get_ti2i_1(2)
     t3_2 = cg.get_ti2i_1(3)
 
-    #f is a func of theta3
-    f = trigsimp(t3_2 @ p4_3)
+    #f is a func of theta3, trigsimp her may not need, remove it later
+    # f = trigsimp(t3_2 @ p4_3)
+    f = t3_2 @ p4_3
+
     f1, f2, f3 = f[0:3]
-    # g is a func of theta2 and theta3
+    # g is a func of theta2 and theta3, trigsimp in her is essential!!!
     g = trigsimp(t2_1 @ f)
     g1, g2, g3 = g[0:3]
 
@@ -146,6 +148,7 @@ def pieper(t6_0):
     #print('@t2:=', t2 * 180 / pi)
 
     # solve q1: x=c1*g1(q2,q3)-s1*g2(q2,q3)
+    """
     for t3 in q3s:
         #print('@t3:=', t3 * 180 / pi)
         for t2 in q2s:
@@ -157,6 +160,9 @@ def pieper(t6_0):
 
     # q1s = list(dict.fromkeys(q1s))
     q1s = [*set(q1s)]
+    """
+    # q1 is simply atan2(y,x) according to ntu
+    q1s.append(atan2(y,x))
 
     #verify ik
     #x=c1g1-s1g2, y=s1g1+c1g2
@@ -179,6 +185,7 @@ def pieper(t6_0):
                     #qs = np.append(qs, [t1, t2, t3])
                     q123 = np.array([t1, t2, t3],dtype=np.float)
                     q456 = ik.ik456(t6_0[0:3, 0:3], t1, t2, t3)
+                    # q456 = ik.ik4_5_6(t6_0[0:3, 0:3], t1, t2, t3)
                     qs = np.concatenate((q123, q456))
                     #qs = np.append(qs, ik.ik456(t6_0[0:3, 0:3], t1, t2, t3))
                     # get one verified q1-3 is enough

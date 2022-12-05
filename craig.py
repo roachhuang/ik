@@ -1,7 +1,7 @@
 from cmath import acos
 from math import atan2, pi, sqrt
 # the reason for importing cos and sin from sympy is Rot case (can't import them from math, plz note!!!)
-from sympy import trigsimp, Symbol, init_printing, sin, cos, symbols, simplify
+from sympy import trigsimp, Symbol, init_printing, sin, cos, symbols, nsimplify, Matrix
 import numpy as np
 #import sympy as sp
 from math import log10, floor
@@ -55,11 +55,10 @@ def rotationMatrixToEulerAngles(R):
         z = 0
     return np.rad2deg(np.array([x, y, z]))
 
-
 # ti_i-1
 def get_ti2i_1(i, theta=None):
     # init_printing(use_unicode=True)  # use pretty math output
-    # np.set_printoptions(precision=2, suppress=True)
+    # np.set_printoptions(suppress=True, formatter={'float_kind':'{:0.2f}'.format})  #float, 2 units
 
     # fill in dh tbl wrt robot arms' dh params
 
@@ -88,25 +87,28 @@ def get_ti2i_1(i, theta=None):
                   ], [0, 0, 0, 1]])
 
     """
-    m = np.array(
-        [[cos(t), -sin(t), 0, ai],
-         [sin(t) * cos(alp),
-          cos(t) * cos(alp), -sin(alp), -sin(alp) * di],
-         [sin(t) * sin(alp),
-          cos(t) * sin(alp),
-          cos(alp),
-          cos(alp) * di], [0, 0, 0, 1]])
+    # the reason for using sympy's Matrix is that we need to apply it with sympy's simplify func
+    # to eliminate sth likes 1.xxxxxe-14 * sin(qx)
+    m = Matrix([[cos(t), -sin(t), 0, ai],
+    [sin(t) * cos(alp), cos(t) * cos(alp), -sin(alp), -sin(alp) * di],
+    [sin(t) * sin(alp), cos(t) * sin(alp), cos(alp), cos(alp) * di],
+    [0, 0, 0, 1]])
 
     if theta is None:
         #t=t.evalf(2)
         #t = np.round(t.astype(np.double), 2)
-        print(f't{i}-{i-1}:', m)
-        return m
+        # print(f't{i}-{i-1}: {m:.2f}')
+        # by default a value >=1e-17 is not converted to 0
+        m = nsimplify(m, tolerance=1e-10, rational=True)
+        print(f't{i}-{i-1}: {m}')
+        return np.array(m)
+
     else:
         print(f't{i}-{i-1}:', m)
         #print (f't{i}-{i-1}:', np.round(t.astype(np.double),2))
         #return (np.format_float_scientific(m))
-        return m.astype(float)
+        # return m.astype(float)
+        return np.array(m).astype(np.float64)
 
 
 '''
