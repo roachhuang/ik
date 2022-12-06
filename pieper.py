@@ -138,8 +138,8 @@ def pieper(t6_0):
     for t3 in q3s:
         #print('@t3:=', t3 * 180 / pi)
         #print('cos(t3)= {}'.format(cos(t3)))
-        rExpr = rExpr.subs(q3, t3)
-        tmp = solve(Eq(lExpr, rExpr), q2)
+        r = rExpr.subs(q3, t3)
+        tmp = solve(Eq(lExpr, r), q2)
         q2s.extend(tmp)
 
     #q2s = list(dict.fromkeys(q2s))
@@ -148,7 +148,7 @@ def pieper(t6_0):
     #print('@t2:=', t2 * 180 / pi)
 
     # solve q1: x=c1*g1(q2,q3)-s1*g2(q2,q3)
-    """
+
     for t3 in q3s:
         #print('@t3:=', t3 * 180 / pi)
         for t2 in q2s:
@@ -160,9 +160,9 @@ def pieper(t6_0):
 
     # q1s = list(dict.fromkeys(q1s))
     q1s = [*set(q1s)]
-    """
+
     # q1 is simply atan2(y,x) according to ntu
-    q1s.append(atan2(y,x))
+    # q1s.append(atan2(y,x))
 
     #verify ik
     #x=c1g1-s1g2, y=s1g1+c1g2
