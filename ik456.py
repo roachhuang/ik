@@ -4,15 +4,15 @@
 # refer to must read UCLA ik.pdf for r6_3
 # https://univ.deltamoocx.net/courses/course-v1:AT+AT_010_1102+2022_02_01/courseware/a3e573de127b85f1dcb23ea797cd253f/dc947a72e470ca516e9270c3bb4424e1/?child=first
 # from cmath import atan
-from math import atan2, cos, sin, acos, asin, sqrt
+from math import atan2, cos, sin, acos, asin, sqrt, pi
 import numpy as np
 import craig as cg
 from sympy import symbols, simplify
 
 def ver456(r6_3, q4s, q5s, q6s):
-    for t4 in q4s.real:
-        for t5 in q5s.real:
-            for t6 in q6s.real:
+    for t4 in q4s:
+        for t5 in q5s:
+            for t6 in q6s:
                 t4_3 = cg.get_ti2i_1(4, t4)
                 t5_4 = cg.get_ti2i_1(5, t5)
                 t6_5 = cg.get_ti2i_1(6, t6)
@@ -20,11 +20,12 @@ def ver456(r6_3, q4s, q5s, q6s):
                 R6_3 = t6_3[0:3, 0:3]
                 #print('r6_3:', r6_3)
                 #print('R6_3:', R6_3)
-                R6_3=R6_3.astype(np.float64)
+                R6_3=R6_3.astype(np.float)
+                r6_3=R6_3.astype(np.float)
                 if np.allclose(r6_3, R6_3):
                     print(f'q4:{t4 * 180 / np.pi}, q5:{t5 * 180 / np.pi}, q6:{t6 * 180 / np.pi}')
                     return (np.array([t4, t5, t6], dtype=np.float16))
-    return 'no 456'
+    # return 'no 456'
 
 def ik4_5_6(r6_0, t1, t2, t3):
     # np.set_printoptions(precision=4, suppress=True)
@@ -52,9 +53,10 @@ def ik4_5_6(r6_0, t1, t2, t3):
 
 # input: radian
 def ik456(r6_0, t1, t2, t3):
-    q4s = []
-    q5s = []
-    q6s = []
+    #q456s = []
+    q4s=[]
+    q5s=[]
+    q6s=[]
     """
     q4,q5,q6=euler angles phi, theta, psi. see unit5 part3
     R6-3=Rz,phi Ry,theat Rz,psi = Rz,q4 Ry,q5 Rz,q6
@@ -77,46 +79,41 @@ def ik456(r6_0, t1, t2, t3):
     t1_0=cg.get_ti2i_1(1, t1)
     t3_0 = t1_0@t2_1@t3_2
     r3_0 = t3_0[0:3, 0:3]
+    alp3 = cg.dh_tbl[3, 0]
+    # to align with zyz, we need to rotx(alp) wrt R4_3
+    r3prime_0 = r3_0 @ cg.Rot('x', alp3)
     # r3_0=X(alp0)Z(t1)X(alp1)Z(t2)X(alp2)Z(t3
     # = X(0)Z(58.61)X(-90)Z(-64.46)X(0)Z(-11.98)
-    # this r3_0 uses standard dh table.
-    '''
-    r3_0 = np.array(
-        [[cos(t1) * cos(t2 + t3), -cos(t1) * sin(t2 + t3), -sin(t1)],
-         [sin(t1) * cos(t2 + t3), -sin(t1) * sin(t2 + t3),
-          cos(t1)], [-sin(t2 + t3), -cos(t2 + t3), 0]], dtype=float)
-    '''
 
-    # print('r3_0', r3_0)
-    # print(cg.get_ti2i_1(4) @ cg.get_ti2i_1(5), cg.get_ti2i_1(6))
     r6_3 = np.transpose(r3_0) @ r6_0
-    print('r6-3=', r6_3)
-
 
     # Elur angle zyz, NTU; however, puma560's axes 4,5,6 aint the same as ntu's.
     # firstable rotate r4_3 in x axis to be in line w/ euler,
     # b frame to a frame Rz'y'z'(alp,beta, gamma) = Rz'(alp)Ry'(beta)Rz'(gamma)
 
-    alp3 = cg.dh_tbl[3, 0]
-    r3prime_0 = r3_0 @ cg.Rot('x', alp3)
+    # r3prime_0 = r3_0 @ cg.Rot('x', alp3)
     r6_3prime = r3prime_0.T @ r6_0
-    r6_3prime=r6_3prime
     #print('r6_3prime:', r6_3prime)
-    # r6_3prime = r4_3prime_z_y_z(alp, beta, gama)
+    # r6_3prime = r4_3primez'y'z'(alp, beta, gama)
     r13 = r6_3prime[0, 2]
     r23 = r6_3prime[1, 2]
     r31 = r6_3prime[2, 0]
     r32 = r6_3prime[2, 1]
     r33 = r6_3prime[2, 2]
     beta = atan2(sqrt(r31**2 + r32**2), r33)
+    alp=atan2(r23 / sin(beta), r13 / sin(beta))
+    gamma=atan2(r32 / sin(beta), -r31 / sin(beta))
+    q4s=np.append(q4s, alp)
     q5s=np.append(q5s, beta)
-    q4s = np.append(q4s, atan2(r23 / sin(beta), r13 / sin(beta)))
-    q6s = np.append(q6s, atan2(r32 / sin(beta), -r31 / sin(beta)))
+    q6s=np.append(q6s, gamma)
 
     beta = atan2(-sqrt(r31**2 + r32**2), r33)
+    alp=atan2(r23 / sin(beta), r13 / sin(beta))
+    gamma=atan2(r32 / sin(beta), -r31 / sin(beta))
+    q4s=np.append(q4s, alp)
     q5s=np.append(q5s, beta)
-    q4s = np.append(q4s, atan2(r23 / sin(beta), r13 / sin(beta)))
-    q6s = np.append(q6s, atan2(r32 / sin(beta), -r31 / sin(beta)))
+    q6s=np.append(q6s, gamma)
+    #q456s=np.row_stack((ans1, ans2))
 
     # https://www.meccanismocomplesso.org/en/3d-rotations-and-euler-angles-in-python/
     """
@@ -179,4 +176,4 @@ def ik456(r6_0, t1, t2, t3):
     #--------------------------------------------------------
 
     print(f'q4= {np.rad2deg(q4s)}, q5= {np.rad2deg(q5s)}, q6= {np.rad2deg(q6s)}')
-    return ver456(r6_3, q4s, q5s, q6s)
+    return ver456(r6_3, q4s,q5s,q6s)

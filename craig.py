@@ -100,7 +100,7 @@ def get_ti2i_1(i, theta=None):
         # print(f't{i}-{i-1}: {m:.2f}')
         # by default a value >=1e-17 is not converted to 0
         m = nsimplify(m, tolerance=1e-10, rational=True)
-        print(f't{i}-{i-1}: {m}')
+        # print(f't{i}-{i-1}: {m}')
         return np.array(m)
 
     else:
@@ -108,8 +108,8 @@ def get_ti2i_1(i, theta=None):
         #print (f't{i}-{i-1}:', np.round(t.astype(np.double),2))
         #return (np.format_float_scientific(m))
         # return m.astype(float)
-        return np.array(m).astype(np.float64)
-
+        m = np.array(m).astype(np.float)
+        return m
 
 '''
 ntu:
