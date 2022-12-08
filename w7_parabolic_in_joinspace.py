@@ -58,6 +58,7 @@ def main():
         fk_t6_0 = np.around(cg.fk_6axes(np.deg2rad(p[i,1:7])), decimals=1)+0.0
         print (f'fk_t6_0: {fk_t6_0}')
         assert np.allclose(np.around(t6_0, decimals=1), fk_t6_0)
+        # assert np.allclose(t6_0.astype(np.float64), fk_t6_0.astype(np.float64))
 
     col_names = ['ti', 'q1', 'q2', 'q3', 'q4', 'q5', 'q6']
     P = pd.DataFrame(p, columns=col_names, index=row_names)

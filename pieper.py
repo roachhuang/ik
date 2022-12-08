@@ -20,6 +20,7 @@ def pieper(t6_0):
     q3s = []
     #solved 3 axies in tuple
     qs = []
+    list_of_qs=[]
 
     u, q1, q2, q3 = symbols('u,q1,q2,q3')
 
@@ -151,7 +152,7 @@ def pieper(t6_0):
     # q2s = [*set(q2s)]
 
     # to pair q2 and q3 in the array
-    q23s = np.array(q23s, dtype=np.float)
+    q23s = np.array(q23s, dtype=np.float64)
     '''
     x=c1*g1(q2,q3)-s1*g2(q2,q3)
     y=s1*g1(q2,q3)+c1*g2(q2,q3)
@@ -163,7 +164,7 @@ def pieper(t6_0):
     for t23 in q23s:
         gg1 = g1.subs([(q2, t23[0]), (q3, t23[1])])
         gg2 = g2.subs([(q2, t23[0]), (q3, t23[1])])
-        ag = np.array([[gg1, -gg2], [gg2, gg1]], dtype=np.float)
+        ag = np.array([[gg1, -gg2], [gg2, gg1]], dtype=np.float64)
         cs = np.linalg.inv(ag) @ xy
         t1 = atan2(cs[1], cs[0])
         q1s.append(t1)
@@ -171,7 +172,7 @@ def pieper(t6_0):
     # one pair of q2,q3 returns one q1 only
     q123s = np.insert(q23s, 0, q1s, axis=1)
     # q1 = [-90, 90], constrain q1 btw -90 and 90
-    q123s = np.delete(q123s, np.where((q123s[:,0]<-1.57)|(q123s[:,0]>1.57))[0], axis=0)
+    # q123s = np.delete(q123s, np.where((q123s[:,0]<-1.57)|(q123s[:,0]>1.57))[0], axis=0)
     print(f'q1-3: {np.rad2deg(q123s)}')
     #q1s = [*set(q1s)]
 
@@ -195,14 +196,18 @@ def pieper(t6_0):
             #q1-3=np.append(qs, [t1,t2,t3])
             # qs array contains verified q1~q3
             #qs = np.append(qs, [t1, t2, t3])
-            q123 = np.array([t123[0], t123[1], t123[2]], dtype=np.float)
+            q123 = np.array([t123[0], t123[1], t123[2]], dtype=np.float64)
 
             q456 = ik.ik456(t6_0[0:3, 0:3], t123[0], t123[1], t123[2])
             # q456 = ik.ik4_5_6(t6_0[0:3, 0:3], t1, t2, t3)
             qs = np.concatenate((q123, q456))
+            list_of_qs=np.append(list_of_qs, qs)
             # get one verified q1-3 is enough
             print(f'q1-6: {np.rad2deg(qs)}')
-            return qs
-   
+
+    list_of_qs=np.reshape(list_of_qs, (-1,6) )
+    #return list_of_qs
+    return qs
+
 
 

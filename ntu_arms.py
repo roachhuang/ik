@@ -12,21 +12,27 @@ def ntu_pieper():
                         [0, 340, 0],
                         [np.deg2rad(-90), -40, 338],
                         [np.deg2rad(90), 0, 0],
-                        [np.deg2rad(-90),0,0]], dtype=float)
+                        [np.deg2rad(-90),0,0]], dtype=np.float64)
 
     cg.setDhTbl(dh_tbl)
 
     ty = np.deg2rad(-60) # rotate y axis
     tcup_0_2s = np.array([[cos(ty), 0, sin(ty), 330], [0, 1, 0, 372],
-                            [-sin(ty), 0, cos(ty), 367], [0, 0, 0, 1]], dtype=float)
+                            [-sin(ty), 0, cos(ty), 367], [0, 0, 0, 1]], dtype=np.float64)
     Tcup_6 = np.array([[0, 0, 1, 0], [0, -1, 0, 0], [1, 0, 0, 206],
-                        [0, 0, 0, 1]], dtype=int)
+                        [0, 0, 0, 1]])
 
     t6_0 = tcup_0_2s @ np.linalg.inv(Tcup_6)
     # t6_0=  np.round(t6_0.astype(np.double), 3)
-    pp.pieper(t6_0)
 
+    p=pp.pieper(t6_0)
+    fk_t6_0=cg.fk_6axes(p)
+    print(fk_t6_0)
+    assert np.allclose(t6_0.astype('float'), fk_t6_0.astype('float'))
+    print('FK6 is 6!!!')
+    
 ntu_pieper()
+
 """
 q3: -11.98, 178.48
 q2: -64.46, 20.37

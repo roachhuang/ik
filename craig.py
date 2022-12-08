@@ -71,22 +71,7 @@ def get_ti2i_1(i, theta=None):
         t = theta
     #ci = Symbol('cos'+str(i))
     #si = Symbol('sin'+str(i))
-    """
-    m = np.array([[cos(t), -sin(t), 0, ai],
-                  [
-                      sin(t) * round(cos(alp), 2),
-                      cos(t) * round(cos(alp), 2),
-                      round(-sin(alp),2),
-                      round(-sin(alp),2) * di
-                  ],
-                  [
-                      sin(t) * round(sin(alp), 2),
-                      cos(t) * round(sin(alp), 2),
-                      round(cos(alp),2),
-                      round(cos(alp),2) * di
-                  ], [0, 0, 0, 1]])
 
-    """
     # the reason for using sympy's Matrix is that we need to apply it with sympy's simplify func
     # to eliminate sth likes 1.xxxxxe-14 * sin(qx)
     m = Matrix([[cos(t), -sin(t), 0, ai],
@@ -104,11 +89,11 @@ def get_ti2i_1(i, theta=None):
         return np.array(m)
 
     else:
-        print(f't{i}-{i-1}:', m)
+        # print(f't{i}-{i-1}:', m)
         #print (f't{i}-{i-1}:', np.round(t.astype(np.double),2))
         #return (np.format_float_scientific(m))
         # return m.astype(float)
-        m = np.array(m).astype(np.float)
+        m = np.array(m).astype(np.float64)
         return m
 
 '''
@@ -122,7 +107,6 @@ a(1-u**2)+2bu=c(1+u**2) -> (a+c)u^2-2bu+(c-a)=0
 一元2次方程式: u=b+/-srqt(b^2+a^2-c^2)/a+c
 x=2atan2(b+/-srqt(b^2+a^2-c^2), a+c)
 '''
-
 
 def trig_equ(a, b, c):
     np.set_printoptions(precision=3, suppress=True)
@@ -153,43 +137,18 @@ def isfloat(num):
     except ValueError:
         return False
 
-
-def extract_num(inp_str):
-    # inp_str=inp_str.strip()
-    # inp_str= inp_str.replace("+ ", "+")
-    # inp_str= inp_str.replace("- ", "-")
-    newG = ''
-    num = 0
-
-    print("Original String : ", inp_str)
-    s = '+'
-    for c in inp_str.split():
-        if c == '+' or c == '-':
-            s = c  # keep the sign of nxt numeric
-            newG += c
-        #elif c.isnumeric():
-        elif isfloat(c):
-            num = num - float(c) if s == '-' else num + float(c)
-            newG = newG[:-1]
-            print("Extracted numbers from the list : ", num)
-        else:
-            newG += c
-    # conver string to sympy expressions
-    t = (trigsimp(newG), num)
-    return t
-
-
 def fk_3axes(l1, l2, l3, q1, q2, q3):
     x = l1 * cos(q1) + l2 * cos(q1 + q2) + l3 * cos(q1 + q2 + q3)
     y = l1 * sin(q1) + l2 * sin(q1 + q2) + l3 * sin(q1 + q2 + q3)
     print(f'x, y: {x, y}')
     return (x, y)
 
-
 def fk_6axes(q):
-    return get_ti2i_1(1, q[0]) @ get_ti2i_1(2, q[1]) @ get_ti2i_1(
+    m=[]
+    m= get_ti2i_1(1, q[0]) @ get_ti2i_1(2, q[1]) @ get_ti2i_1(
         3, q[2]) @ get_ti2i_1(4, q[3]) @ get_ti2i_1(5, q[4]) @ get_ti2i_1(
             6, q[5])
+    return np.array(m, dtype=np.float64)
 
 
 #l3=206

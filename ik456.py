@@ -3,7 +3,8 @@
 # q4,q5, q6
 # refer to must read UCLA ik.pdf for r6_3
 # https://univ.deltamoocx.net/courses/course-v1:AT+AT_010_1102+2022_02_01/courseware/a3e573de127b85f1dcb23ea797cd253f/dc947a72e470ca516e9270c3bb4424e1/?child=first
-# from cmath import atan
+
+# this ik456 doesn't work for puma650!!!
 from math import atan2, cos, sin, acos, asin, sqrt, pi
 import numpy as np
 import craig as cg
@@ -20,11 +21,9 @@ def ver456(r6_3, q4s, q5s, q6s):
                 R6_3 = t6_3[0:3, 0:3]
                 #print('r6_3:', r6_3)
                 #print('R6_3:', R6_3)
-                R6_3=R6_3.astype(np.float)
-                r6_3=R6_3.astype(np.float)
-                if np.allclose(r6_3, R6_3):
+                if np.allclose(r6_3.astype(np.float64), R6_3.astype(np.float64)):
                     print(f'q4:{t4 * 180 / np.pi}, q5:{t5 * 180 / np.pi}, q6:{t6 * 180 / np.pi}')
-                    return (np.array([t4, t5, t6], dtype=np.float16))
+                    return (np.array([t4, t5, t6], dtype=np.float64))
     # return 'no 456'
 
 def ik4_5_6(r6_0, t1, t2, t3):

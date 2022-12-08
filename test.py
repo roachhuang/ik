@@ -14,3 +14,5 @@ y=np.array([1,1])
 z= np.linalg.inv(x) @ y
 
 print(np.rad2deg(np.arctan2(-0.9113, -0.4114)))
+
+print(np.append([[1, 2, 3], [4, 5, 6]], [[7, 8, 9]], axis=0))

@@ -5,7 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import plan_traj as pt
 
-#SPACE = 'cartesion'
+# SPACE = 'cartesion'
 SPACE = 'joint'
 # https://arduinogetstarted.com/faq/how-to-control-speed-of-servo-motor
 
@@ -22,7 +22,7 @@ def main():
     # time, x, y, z, tx, ty, tz
     p = np.array([[0, 630, 364, 20, 0, 0, 0], [3, 630, 304, 220, 60, 0, 0],
                   [7, 630, 220, 24, 180, 0, 0]],
-                 dtype=float)
+                 dtype=np.float)
 
     col_names = ['ti', 'xi', 'yi', 'zi', 'qx', 'qy', 'qz']
     row_names = ['p0', 'p1', 'p2']
@@ -41,11 +41,12 @@ def main():
     # substract 頭, 尾
     viaPoints = totalPoints - 2
     DOF = 6
-
+    
     for i in range(totalPoints):
         tx, ty, tz = np.deg2rad(p[i, 4:7])
         # combine rot and translation vector into transformation matrix
-        tf[:3, :3] = cg.Rot('x', tx) @ cg.Rot('y', ty) @ cg.Rot('z', tz)  # rotation matrix
+        tf[:3, :3] = cg.Rot('x', tx) @ cg.Rot('y', ty) @ cg.Rot(
+            'z', tz)  # rotation matrix
         tf[:3, 3] = p[i, 1:4]  # x,y,z
         tf[3, :] = [0, 0, 0, 1]
         tc_0.append(tf)
@@ -58,11 +59,12 @@ def main():
             p[i, 1:4] = t6_0[0:3, 3].T
         else:
             col_names = ['ti', 'q1', 'q2', 'q3', 'q4', 'q5', 'q6']
-            p[i, 1:7] = np.rad2deg(pp.pieper(t6_0))
-            fk_t6_0 = np.around(cg.fk_6axes(np.deg2rad(p[i, 1:7])),
-                                decimals=1) + 0.0
+            p[i, 1:7] = pp.pieper(t6_0)
+            # fk_t6_0 = np.around(cg.fk_6axes(p[i, 1:7]), decimals=1) + 0.0
+            fk_t6_0=cg.fk_6axes(p[i, 1:7])
             print(fk_t6_0)
-            assert np.allclose(np.around(t6_0, decimals=1), fk_t6_0)
+            assert np.allclose(t6_0.astype('float'), fk_t6_0.astype('float'))
+            # assert np.allclose(np.around(t6_0, decimals=1), fk_t6_0)
 
     P = pd.DataFrame(p, columns=col_names, index=row_names)
     print(P)
@@ -146,6 +148,7 @@ def main():
     # ik p0 ~ pf 所有的點
     # FK to xyz space to verify
     # plt simulation
+
 
 # 0s ~ final second
     timeAxis = np.arange(0.0, p[totalPoints - 1, 0], 0.1)

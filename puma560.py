@@ -7,21 +7,26 @@ import pieper as pp
 
 #warnings.filterwarnings('ignore')
 #from inverse_kinematic import trig_equ
-np.set_printoptions(precision=3, suppress=True)
+
+# np.set_printoptions(precision=3, suppress=True)
 
 #PUMA 560
 dh_tbl = np.array([[0, 0, 0], [np.deg2rad(-90), 0, 0], [0, 2, 0.5],
                    [np.deg2rad(-90), 0.1666, 2], [np.deg2rad(90), 0, 0],
-                   [np.deg2rad(90), 0, 0]])
+                   [np.deg2rad(90), 0, 0]], dtype=np.float64)
 
 cg.setDhTbl(dh_tbl)
 #getcontext().prec=2
 #getcontext().rounding = ROUND_UP
 
 t6_0 = np.array([[-(1 / sqrt(2)), 0, 1 / sqrt(2), 1], [0, -1, 0, 1],
-                 [1 / sqrt(2), 0, 1 / sqrt(2), -1], [0, 0, 0, 1]])
+                 [1 / sqrt(2), 0, 1 / sqrt(2), -1], [0, 0, 0, 1]], dtype=np.float64)
 
-pp.pieper(t6_0)
+allqs=pp.pieper(t6_0)
+print('all qs=', np.rad2deg(allqs))
+#fk_t6_0 = np.around(cg.fk_6axes(np.deg2rad(qs)), decimals=1) + 0.0
+#print(fk_t6_0)
+#assert np.allclose(np.around(t6_0, decimals=1), fk_t6_0)
 
 """
 q1,q2,q3:   24.3, -28.7, 45.9
